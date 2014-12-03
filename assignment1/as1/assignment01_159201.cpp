@@ -22,18 +22,49 @@ public:
     SparseMatrix() = delete;
 
     explicit SparseMatrix(std::string fn):
-        Head_{nullptr}, rows_{0}, cols_{0}
+        head_{nullptr},
+        tail_{nullptr},
+        rows_{0},
+        cols_{0}
     {
         construct_linked_list(fn);
     }
 
+    bool empty()const
+    {
+        return !head_ and !tail_;
+    }
+
 private:
-    Node* Head_;
+    Node* head_;
+    Node* tail_;
     std::size_t rows_;
     std::size_t cols_;
 
-    Node* add()
+    /**
+     * @brief add
+     * @param node
+     *
+     * @abstraction III
+     */
+    void add(Node && node)
+    {
+        if(empty()){
+            head_ = tail_ = new Node(std::move(node));
+        }
+        else{
+            tail_->next =   new Node(std::move(node));
+            tail_       =   tail_->next;
+        }
+    }
 
+    /**
+     * @brief read_and_init_dimensions
+     * @param ifs
+     * @return ifs
+     *
+     * @abstraction II
+     */
     std::ifstream& read_and_init_dimensions(std::ifstream& ifs)
     {
         std::string line;
@@ -44,6 +75,13 @@ private:
         return ifs;
     }
 
+    /**
+     * @brief read_and_init_matrix_body
+     * @param ifs
+     * @return ifs
+     *
+     * @abstraction II
+     */
     std::ifstream& read_and_init_matrix_body(std::ifstream& ifs)
     {
         std::string line;
@@ -55,19 +93,24 @@ private:
                 Value value{};
                 stream >> value;
                 if(value == 0) continue;
+                add({r, c, value, nullptr});
             }
         }
+
+        return ifs;
     }
 
+    /**
+     * @brief construct_linked_list
+     * @param fn
+     * @abstraction I
+     */
     void construct_linked_list(std::string const& fn)
     {
         std::ifstream ifs{fn};
         if(!ifs.good())
             throw std::runtime_error{"Cannot open file " + fn};
-        ifs = read_and_init_dimensions(ifs);
-
-        //working
-
+        read_and_init_matrix_body(read_and_init_dimensions(ifs));
     }
 
 };
