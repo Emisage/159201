@@ -21,6 +21,12 @@ public:
 
     SparseMatrix() = delete;
 
+    /**
+     * @brief Ctor using file name
+     * @param fn
+     *
+     * @abstraction interface
+     */
     explicit SparseMatrix(std::string fn):
         head_{nullptr},
         tail_{nullptr},
@@ -30,6 +36,11 @@ public:
         construct_linked_list(fn);
     }
 
+    /**
+     * @brief empty
+     *
+     * @abstraction interface
+     */
     bool empty()const
     {
         return !head_ and !tail_;
