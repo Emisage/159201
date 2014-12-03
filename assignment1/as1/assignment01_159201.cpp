@@ -50,20 +50,21 @@ inline bool is_precedent(Node const& lhs, Node const& rhs)
 template<typename T>
 class SparseMatrix;
 
-//template<typename T>
-//std::ostream& print_data(SparseMatrix<T> const& m);
-
 template<typename T>
 SparseMatrix<T> operator+(SparseMatrix<T> const& lhs, SparseMatrix<T> const& rhs);
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os, SparseMatrix<T> const& rhs);
 
 
 template<typename Node>
 class SparseMatrix
 {
-//    friend std::ostream&
-//    print_data<Node>(SparseMatrix const& m);
     friend SparseMatrix
-    operator+ <Node> (SparseMatrix const& lhs, SparseMatrix const& rhs);
+    operator+  <Node> (SparseMatrix const& lhs, SparseMatrix const& rhs);
+
+    friend std::ostream&
+    operator<< <Node> (std::ostream& os, SparseMatrix<Node> const& rhs);
 
 public:
     using ValueType =   decltype(Node::value);
@@ -140,7 +141,7 @@ private:
             tail_->next =   new Node(std::move(node));
             tail_       =   tail_->next;
         }
-        std::cout << "ads> added:" << *tail_ << std::endl;
+//        std::cout << "ads> added:" << *tail_ << std::endl;
     }
 
     /**
@@ -152,7 +153,7 @@ private:
         std::getline(ifs, line);
         std::stringstream stream{line};
         stream >> rows_ >> cols_;
-        std::cout << "Matrix dimensions " << rows_ << " " << cols_ << std::endl;
+//        std::cout << "Matrix dimensions " << rows_ << " " << cols_ << std::endl;
         return ifs;
     }
 
@@ -162,8 +163,7 @@ private:
     std::ifstream& read_and_init_body(std::ifstream& ifs)
     {
         std::string line;
-        for(IndexType r=0; r != rows_; ++r)
-        {
+        for(IndexType r=0; r != rows_; ++r){
             std::getline(ifs,line);
             std::stringstream stream{line};
             for(IndexType c=0; c != cols_; ++c)
@@ -214,14 +214,30 @@ private:
 };
 
 
-//! print the data stored by linked list
-//template<typename T>
-//inline std::ostream& print_data(SparseMatrix<T> const& m)
-//{
-//    for(auto curr = m.head_; curr; curr = curr->next)
-//        std::cout << curr->value << " ";
-//    return std::cout;
-//}
+template<typename T>
+std::ostream& operator<<(std::ostream& os, SparseMatrix<T> const& rhs)
+{
+    auto curr = rhs.head_;
+    using IndexType = typename SparseMatrix<T>::IndexType;
+    for(IndexType r = 0; r != rhs.rows_; ++r)
+    {
+        for(IndexType c = 0; c != rhs.cols_; ++c)
+        {
+            if(!curr or is_precedent(Node{r, c, 0, nullptr}, *curr)){
+                os << 0 << " ";
+            }
+            else
+            {
+                os << curr->value << " ";
+                curr = curr->next;
+            }
+        }
+        std::cout << std::endl;
+    }
+
+    return os;
+}
+
 
 //! add two matrices
 template<typename T>
@@ -266,15 +282,19 @@ SparseMatrix<T> operator+(SparseMatrix<T> const& lhs, SparseMatrix<T> const& rhs
 int main()
 {
     ads::SparseMatrix<ads::Node> lhs{"matrix1.txt"}, rhs{"matrix2.txt"};
-    std::cout << "-------------------------------\n";
     auto sum = lhs + rhs;
 
-    std::cout << "-------------------------------\n";
+    std::cout << "Matrix 1: ";
     lhs.print_data() << std::endl;
+    std::cout << lhs;
+
+    std::cout << "Matrix 2: ";
     rhs.print_data() << std::endl;
+    std::cout << rhs;
+
+    std::cout << "Matrix Result: ";
     sum.print_data() << std::endl;
-
-
+    std::cout << sum;
 
     return 0;
 }
