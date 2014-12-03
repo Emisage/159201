@@ -69,7 +69,6 @@ public:
     using SizeType  =   std::size_t;
 
     SparseMatrix(SparseMatrix const&)               = delete;
-    SparseMatrix(SparseMatrix &&)                   = delete;
     SparseMatrix& operator=(SparseMatrix const&)    = delete;
     SparseMatrix& operator=(SparseMatrix &&)        = delete;
 
@@ -80,7 +79,7 @@ public:
         cols_{0}
     {}
 
-    SparseMatrix(IndexType rows, IndexType cols):
+    SparseMatrix(SizeType rows, SizeType cols):
         head_{nullptr},
         tail_{nullptr},
         rows_{rows},
@@ -92,6 +91,13 @@ public:
     {
         construct_linked_list(fn);
     }
+
+    SparseMatrix(SparseMatrix && sm) noexcept :
+        SparseMatrix(sm.head_, sm.tail_, sm.rows_, sm.cols_)
+    {
+        sm.head_ = sm.tail_ = nullptr;
+    }
+
 
     bool empty()const
     {
@@ -111,6 +117,13 @@ private:
     Node* tail_;
     SizeType rows_;
     SizeType cols_;
+
+    SparseMatrix(Node* h, Node* t, SizeType rows, SizeType cols):
+        head_{h},
+        tail_{t},
+        rows_{rows},
+        cols_{cols}
+    {}
 
     /**
      * @abstraction III
@@ -202,18 +215,18 @@ SparseMatrix<T> operator+(SparseMatrix<T> const& lhs, SparseMatrix<T> const& rhs
         }
         else if(is_precedent(*l, *r))
         {
-            ret.add({*l});
+            ret.add(Node(*l));
             l = l->next;
         }
         else
         {
-            ret.add({*r});
+            ret.add(Node(*r));
             r = r->next;
         }
     }
 
     //! copy the rest
-    for(auto rest = (l ? l : r);  rest;  rest = rest->next)  ret.add({*rest});
+    for(auto rest = (l ? l : r);  rest;  rest = rest->next)  ret.add(Node(*rest));
 
     return ret;
 }
@@ -223,11 +236,9 @@ SparseMatrix<T> operator+(SparseMatrix<T> const& lhs, SparseMatrix<T> const& rhs
 
 int main()
 {
-    std::cout << (ads::Node{1,2,42,nullptr} + ads::Node{1,2,10,nullptr});
-
     ads::SparseMatrix<ads::Node> m{"matrix1.txt"};
     std::cout << "size : " <<m.data_size() << std::endl;
-    ads::print_data(m);
+    ads::print_data(m + m);
 
     return 0;
 }
