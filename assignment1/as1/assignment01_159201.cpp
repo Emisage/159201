@@ -5,9 +5,7 @@
 
 namespace ads{
 
-/**
- * @brief Node
- */
+
 struct Node
 {
     int row     ;
@@ -17,9 +15,6 @@ struct Node
 };
 
 
-/**
- * @brief operator << for Node
- */
 inline std::ostream&
 operator<<(std::ostream& os, Node const& rhs)
 {
@@ -48,11 +43,6 @@ template<typename T>
 SparseMatrix<T> operator+(SparseMatrix<T> const& lhs, SparseMatrix<T> const& rhs);
 
 
-/**
- * @brief SparseMatrix
- *
- * using linked list for data storing
- */
 template<typename Node>
 class SparseMatrix
 {
@@ -73,33 +63,18 @@ public:
         cols_{0}
     {}
 
-    /**
-     * @brief Ctor using file name
-     * @param fn
-     *
-     * @abstraction Top
-     */
     explicit SparseMatrix(std::string fn):
         SparseMatrix{}
     {
         construct_linked_list(fn);
     }
 
-    /**
-     * @brief empty
-     *
-     * @abstraction Top
-     */
     bool empty()const
     {
         return !head_ and !tail_;
     }
 
-    /**
-     * @brief size
-     *
-     * @abstraction Top
-     */
+
     SizeType data_size()const
     {
         SizeType len = 0;
@@ -114,9 +89,6 @@ private:
     SizeType cols_;
 
     /**
-     * @brief add
-     * @param node
-     *
      * @abstraction III
      */
     void add(Node && node)
@@ -133,10 +105,6 @@ private:
     }
 
     /**
-     * @brief read_and_init_dimensions
-     * @param ifs
-     * @return ifs
-     *
      * @abstraction II
      */
     std::ifstream& read_and_init_dimensions(std::ifstream& ifs)
@@ -150,10 +118,6 @@ private:
     }
 
     /**
-     * @brief read_and_init_matrix_body
-     * @param ifs
-     * @return ifs
-     *
      * @abstraction II
      */
     std::ifstream& read_and_init_body(std::ifstream& ifs)
@@ -173,8 +137,6 @@ private:
     }
 
     /**
-     * @brief construct_linked_list
-     * @param fn
      * @abstraction I
      */
     void construct_linked_list(std::string const& fn)
