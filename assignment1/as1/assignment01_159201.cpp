@@ -7,17 +7,18 @@ namespace ads{
 
 struct Node
 {
-    int row     = 0;
-    int column  = 0;
-    int value   = 0;
-    Node *next  = nullptr;
+    int row     ;
+    int column  ;
+    int value   ;
+    Node *next  ;
 };
 
 template<typename Node>
 class SparseMatrix
 {
 public:
-    using Value = decltype(Node::value);
+    using ValueType =   decltype(Node::value);
+    using SizeType  =   decltype(Node::row);
 
     SparseMatrix() = delete;
 
@@ -45,6 +46,8 @@ public:
     {
         return !head_ and !tail_;
     }
+
+
 
 private:
     Node* head_;
@@ -96,18 +99,17 @@ private:
     std::ifstream& read_and_init_matrix_body(std::ifstream& ifs)
     {
         std::string line;
-        for(unsigned r=0; r != rows_; ++r)
+        for(SizeType r=0; r != rows_; ++r)
         {
             std::getline(ifs,line);
             std::stringstream stream{line};
-            for(unsigned c=0; c != cols_; ++c){
-                Value value{};
+            for(SizeType c=0; c != cols_; ++c){
+                ValueType value{0};
                 stream >> value;
                 if(value == 0) continue;
                 add({r, c, value, nullptr});
             }
         }
-
         return ifs;
     }
 
@@ -123,13 +125,14 @@ private:
             throw std::runtime_error{"Cannot open file " + fn};
         read_and_init_matrix_body(read_and_init_dimensions(ifs));
     }
-
 };
 
 }//namespace
 
 int main()
 {
+    ads::SparseMatrix<ads::Node> m{"matrix1.txt"};
+
     return 0;
 }
 
