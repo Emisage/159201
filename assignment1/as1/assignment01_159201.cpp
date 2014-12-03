@@ -32,7 +32,7 @@ operator +(Node const& lhs, Node const& rhs)
 
 inline bool is_same_position(Node const& lhs, Node const& rhs)
 {
-    return lhs.row == rhs.row and lhs.row == rhs.row;
+    return lhs.row == rhs.row and lhs.column == rhs.column;
 }
 
 inline bool is_precedent(Node const& lhs, Node const& rhs)
@@ -49,8 +49,10 @@ inline bool is_precedent(Node const& lhs, Node const& rhs)
 //! forward declarations
 template<typename T>
 class SparseMatrix;
+
 template<typename T>
 std::ostream& print_data(SparseMatrix<T> const& m);
+
 template<typename T>
 SparseMatrix<T> operator+(SparseMatrix<T> const& lhs, SparseMatrix<T> const& rhs);
 
@@ -116,6 +118,7 @@ private:
     SizeType rows_;
     SizeType cols_;
 
+    //! private Ctor with 4 args
     SparseMatrix(Node* h, Node* t, SizeType rows, SizeType cols):
         head_{h},
         tail_{t},
@@ -185,6 +188,7 @@ private:
 };
 
 
+//! print the data stored by linked list
 template<typename T>
 inline std::ostream& print_data(SparseMatrix<T> const& m)
 {
@@ -193,6 +197,7 @@ inline std::ostream& print_data(SparseMatrix<T> const& m)
     return std::cout;
 }
 
+//! add two matrices
 template<typename T>
 SparseMatrix<T> operator+(SparseMatrix<T> const& lhs, SparseMatrix<T> const& rhs)
 {
@@ -234,9 +239,10 @@ SparseMatrix<T> operator+(SparseMatrix<T> const& lhs, SparseMatrix<T> const& rhs
 
 int main()
 {
-    ads::SparseMatrix<ads::Node> m{"matrix1.txt"};
-    std::cout << "size : " <<m.data_size() << std::endl;
-    ads::print_data(m + m);
+    ads::SparseMatrix<ads::Node> lhs{"matrix1.txt"}, rhs{"matrix2.txt"};
+    std::cout << "-------------------------------\n";
+    auto sum = lhs + rhs;
+    std::cout << sum.data_size() << std::endl;
 
     return 0;
 }
