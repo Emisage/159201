@@ -13,12 +13,19 @@ struct Node
     Node *next  ;
 };
 
+inline std::ostream&
+operator<<(std::ostream& os, Node const& rhs)
+{
+    return os << rhs.row << " " << rhs.column << " " << rhs.value << std::endl;
+}
+
 template<typename Node>
 class SparseMatrix
 {
 public:
     using ValueType =   decltype(Node::value);
-    using SizeType  =   decltype(Node::row);
+    using IndexType =   decltype(Node::row);
+    using SizeType  =   std::size_t;
 
     SparseMatrix() = delete;
 
@@ -26,7 +33,7 @@ public:
      * @brief Ctor using file name
      * @param fn
      *
-     * @abstraction interface
+     * @abstraction Top
      */
     explicit SparseMatrix(std::string fn):
         head_{nullptr},
@@ -40,20 +47,30 @@ public:
     /**
      * @brief empty
      *
-     * @abstraction interface
+     * @abstraction Top
      */
     bool empty()const
     {
         return !head_ and !tail_;
     }
 
-
+    /**
+     * @brief size
+     *
+     * @abstraction Top
+     */
+    SizeType data_size()const
+    {
+        SizeType len = 0;
+        for(auto curr = head_; curr; curr = curr->next) ++len;
+        return len;
+    }
 
 private:
     Node* head_;
     Node* tail_;
-    std::size_t rows_;
-    std::size_t cols_;
+    SizeType rows_;
+    SizeType cols_;
 
     /**
      * @brief add
@@ -70,6 +87,8 @@ private:
             tail_->next =   new Node(std::move(node));
             tail_       =   tail_->next;
         }
+
+        std::cout << "ads> added:" << *tail_ << std::endl;
     }
 
     /**
@@ -96,18 +115,17 @@ private:
      *
      * @abstraction II
      */
-    std::ifstream& read_and_init_matrix_body(std::ifstream& ifs)
+    std::ifstream& read_and_init_body(std::ifstream& ifs)
     {
         std::string line;
-        for(SizeType r=0; r != rows_; ++r)
-        {
+        for(IndexType r=0; r != rows_; ++r){
             std::getline(ifs,line);
             std::stringstream stream{line};
-            for(SizeType c=0; c != cols_; ++c){
+            for(IndexType c=0; c != cols_; ++c){
                 ValueType value{0};
                 stream >> value;
-                if(value == 0) continue;
-                add({r, c, value, nullptr});
+                if(value)
+                    add({r, c, value, nullptr});
             }
         }
         return ifs;
@@ -123,15 +141,17 @@ private:
         std::ifstream ifs{fn};
         if(!ifs.good())
             throw std::runtime_error{"Cannot open file " + fn};
-        read_and_init_matrix_body(read_and_init_dimensions(ifs));
+        read_and_init_body(read_and_init_dimensions(ifs));
     }
 };
+
 
 }//namespace
 
 int main()
 {
     ads::SparseMatrix<ads::Node> m{"matrix1.txt"};
+    std::cout << "size : " <<m.data_size() << std::endl;
 
     return 0;
 }
