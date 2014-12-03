@@ -26,13 +26,26 @@ operator<<(std::ostream& os, Node const& rhs)
     return os << rhs.row << " " << rhs.column << " " << rhs.value << std::endl;
 }
 
+inline Node
+operator +(Node const& lhs, Node const& rhs)
+{
+    auto ret = lhs;
+    ret.value += rhs.value;
+    ret.next = nullptr;
+    return ret;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 
 
 //! forward declarations
-template<typename T> class SparseMatrix;
-template<typename T> std::ostream& print_data(SparseMatrix<T> const& m);
+template<typename T>
+class SparseMatrix;
+template<typename T>
+std::ostream& print_data(SparseMatrix<T> const& m);
+template<typename T>
+SparseMatrix<T> operator+(SparseMatrix<T> const& lhs, SparseMatrix<T> const& rhs);
 
 
 /**
@@ -43,13 +56,22 @@ template<typename T> std::ostream& print_data(SparseMatrix<T> const& m);
 template<typename Node>
 class SparseMatrix
 {
-    friend std::ostream& print_data<Node>(SparseMatrix const& m);
+    friend std::ostream&
+    print_data<Node>(SparseMatrix const& m);
+    friend SparseMatrix
+    operator+ <Node> (SparseMatrix const& lhs, SparseMatrix const& rhs);
+
 public:
     using ValueType =   decltype(Node::value);
     using IndexType =   decltype(Node::row);
     using SizeType  =   std::size_t;
 
-    SparseMatrix() = delete;
+    SparseMatrix():
+        head_{nullptr},
+        tail_{nullptr},
+        rows_{0},
+        cols_{0}
+    {}
 
     /**
      * @brief Ctor using file name
@@ -58,10 +80,7 @@ public:
      * @abstraction Top
      */
     explicit SparseMatrix(std::string fn):
-        head_{nullptr},
-        tail_{nullptr},
-        rows_{0},
-        cols_{0}
+        SparseMatrix{}
     {
         construct_linked_list(fn);
     }
@@ -176,11 +195,25 @@ inline std::ostream& print_data(SparseMatrix<T> const& m)
     return std::cout;
 }
 
+template<typename T>
+SparseMatrix<T> operator+(SparseMatrix<T> const& lhs, SparseMatrix<T> const& rhs)
+{
+    if(lhs.cols_ != rhs.cols_ or lhs.rows_ != rhs.rows_)
+        throw std::runtime_error{"trying to add matrix with different dimensions!"};
+    auto rows = lhs.rows_, cols = rhs.cols_;
+
+    SparseMatrix<T> ret;
+
+    //! working
+}
+
 
 }//namespace
 
 int main()
 {
+    std::cout << (ads::Node{1,2,42,nullptr} + ads::Node{1,2,10,nullptr});
+
     ads::SparseMatrix<ads::Node> m{"matrix1.txt"};
     std::cout << "size : " <<m.data_size() << std::endl;
     ads::print_data(m);
