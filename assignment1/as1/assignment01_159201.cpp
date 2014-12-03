@@ -50,8 +50,8 @@ inline bool is_precedent(Node const& lhs, Node const& rhs)
 template<typename T>
 class SparseMatrix;
 
-template<typename T>
-std::ostream& print_data(SparseMatrix<T> const& m);
+//template<typename T>
+//std::ostream& print_data(SparseMatrix<T> const& m);
 
 template<typename T>
 SparseMatrix<T> operator+(SparseMatrix<T> const& lhs, SparseMatrix<T> const& rhs);
@@ -60,8 +60,8 @@ SparseMatrix<T> operator+(SparseMatrix<T> const& lhs, SparseMatrix<T> const& rhs
 template<typename Node>
 class SparseMatrix
 {
-    friend std::ostream&
-    print_data<Node>(SparseMatrix const& m);
+//    friend std::ostream&
+//    print_data<Node>(SparseMatrix const& m);
     friend SparseMatrix
     operator+ <Node> (SparseMatrix const& lhs, SparseMatrix const& rhs);
 
@@ -104,12 +104,14 @@ public:
         return !head_ and !tail_;
     }
 
-    //! O(n)
     SizeType data_size()const
     {
-        SizeType len = 0;
-        for(auto curr = head_; curr; curr = curr->next) ++len;
-        return len;
+        return do_data_size();
+    }
+
+    std::ostream& print_data() const
+    {
+        return do_print_data();
     }
 
 private:
@@ -185,17 +187,41 @@ private:
             throw std::runtime_error{"Cannot open file " + fn};
         read_and_init_body(read_and_init_dimensions(ifs));
     }
+
+    /**
+     * @abstraction I
+     *
+     * @complx O(n)
+     */
+    SizeType do_data_size() const
+    {
+        SizeType len = 0;
+        for(auto curr = head_; curr; curr = curr->next) ++len;
+        return len;
+    }
+
+    /**
+     * @abstraction I
+     *
+     * @complx O(n)
+     */
+    std::ostream& do_print_data() const
+    {
+        for(auto curr = head_; curr; curr = curr->next)
+            std::cout << curr->value << " ";
+        return std::cout;
+    }
 };
 
 
 //! print the data stored by linked list
-template<typename T>
-inline std::ostream& print_data(SparseMatrix<T> const& m)
-{
-    for(auto curr = m.head_; curr; curr = curr->next)
-        std::cout << curr->value << " ";
-    return std::cout;
-}
+//template<typename T>
+//inline std::ostream& print_data(SparseMatrix<T> const& m)
+//{
+//    for(auto curr = m.head_; curr; curr = curr->next)
+//        std::cout << curr->value << " ";
+//    return std::cout;
+//}
 
 //! add two matrices
 template<typename T>
@@ -242,7 +268,13 @@ int main()
     ads::SparseMatrix<ads::Node> lhs{"matrix1.txt"}, rhs{"matrix2.txt"};
     std::cout << "-------------------------------\n";
     auto sum = lhs + rhs;
-    std::cout << sum.data_size() << std::endl;
+
+    std::cout << "-------------------------------\n";
+    lhs.print_data() << std::endl;
+    rhs.print_data() << std::endl;
+    sum.print_data() << std::endl;
+
+
 
     return 0;
 }
