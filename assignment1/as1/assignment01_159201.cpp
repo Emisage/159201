@@ -2,6 +2,8 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include <stack>
+
 
 namespace ads{
 
@@ -24,9 +26,9 @@ operator<<(std::ostream& os, Node const& rhs)
 inline Node
 operator +(Node const& lhs, Node const& rhs)
 {
-    auto ret = lhs;
-    ret.value += rhs.value;
-    ret.next = nullptr;
+    auto ret    =   lhs;
+    ret.value   +=  rhs.value;
+    ret.next    =   nullptr;
     return ret;
 }
 
@@ -115,6 +117,11 @@ public:
         return do_print_data();
     }
 
+    ~SparseMatrix()
+    {
+        deallocate_data();
+    }
+
 private:
     Node* head_;
     Node* tail_;
@@ -163,7 +170,8 @@ private:
     std::ifstream& read_and_init_body(std::ifstream& ifs)
     {
         std::string line;
-        for(IndexType r=0; r != rows_; ++r){
+        for(IndexType r=0; r != rows_; ++r)
+        {
             std::getline(ifs,line);
             std::stringstream stream{line};
             for(IndexType c=0; c != cols_; ++c)
@@ -211,6 +219,22 @@ private:
             std::cout << curr->value << " ";
         return std::cout;
     }
+
+    /**
+     * @abstraction I
+     *
+     * @complx O(n)
+     */
+    void deallocate_data()
+    {
+        if(not empty())
+        {
+            std::stack<Node*> stk;
+            for(auto poi = head_; poi; poi = poi->next) stk.push(poi);
+            for( ; not stk.empty(); stk.pop()) delete stk.top();
+            head_ = tail_ = nullptr;
+        }
+    }
 };
 
 
@@ -223,7 +247,8 @@ std::ostream& operator<<(std::ostream& os, SparseMatrix<T> const& rhs)
     {
         for(IndexType c = 0; c != rhs.cols_; ++c)
         {
-            if(!curr or is_precedent(Node{r, c, 0, nullptr}, *curr)){
+            if(!curr or is_precedent(Node{r, c, 0, nullptr}, *curr))
+            {
                 os << 0 << " ";
             }
             else
