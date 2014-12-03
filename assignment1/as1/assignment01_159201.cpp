@@ -30,6 +30,18 @@ operator +(Node const& lhs, Node const& rhs)
     return ret;
 }
 
+inline bool is_same_position(Node const& lhs, Node const& rhs)
+{
+    return lhs.row == rhs.row and lhs.row == rhs.row;
+}
+
+inline bool is_precedent(Node const& lhs, Node const& rhs)
+{
+    if(lhs.row < rhs.row)       return true;
+    else if(lhs.row == rhs.row) return lhs.column < rhs.column;
+    else                        return false;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -56,11 +68,23 @@ public:
     using IndexType =   decltype(Node::row);
     using SizeType  =   std::size_t;
 
+    SparseMatrix(SparseMatrix const&)               = delete;
+    SparseMatrix(SparseMatrix &&)                   = delete;
+    SparseMatrix& operator=(SparseMatrix const&)    = delete;
+    SparseMatrix& operator=(SparseMatrix &&)        = delete;
+
     SparseMatrix():
         head_{nullptr},
         tail_{nullptr},
         rows_{0},
         cols_{0}
+    {}
+
+    SparseMatrix(IndexType rows, IndexType cols):
+        head_{nullptr},
+        tail_{nullptr},
+        rows_{rows},
+        cols_{cols}
     {}
 
     explicit SparseMatrix(std::string fn):
@@ -74,7 +98,7 @@ public:
         return !head_ and !tail_;
     }
 
-
+    //! O(n)
     SizeType data_size()const
     {
         SizeType len = 0;
@@ -100,7 +124,6 @@ private:
             tail_->next =   new Node(std::move(node));
             tail_       =   tail_->next;
         }
-
         std::cout << "ads> added:" << *tail_ << std::endl;
     }
 
@@ -123,10 +146,12 @@ private:
     std::ifstream& read_and_init_body(std::ifstream& ifs)
     {
         std::string line;
-        for(IndexType r=0; r != rows_; ++r){
+        for(IndexType r=0; r != rows_; ++r)
+        {
             std::getline(ifs,line);
             std::stringstream stream{line};
-            for(IndexType c=0; c != cols_; ++c){
+            for(IndexType c=0; c != cols_; ++c)
+            {
                 ValueType value{0};
                 stream >> value;
                 if(value)
@@ -162,11 +187,35 @@ SparseMatrix<T> operator+(SparseMatrix<T> const& lhs, SparseMatrix<T> const& rhs
 {
     if(lhs.cols_ != rhs.cols_ or lhs.rows_ != rhs.rows_)
         throw std::runtime_error{"trying to add matrix with different dimensions!"};
-    auto rows = lhs.rows_, cols = rhs.cols_;
 
-    SparseMatrix<T> ret;
+    SparseMatrix<T> ret{lhs.rows_, lhs.cols_};
 
-    //! working
+    //! copy until either one exausted
+    auto l = lhs.head_, r = rhs.head_;
+    while(l and r)
+    {
+        if(is_same_position(*l, *r))
+        {
+            ret.add(*l + *r);
+            l = l->next;
+            r = r->next;
+        }
+        else if(is_precedent(*l, *r))
+        {
+            ret.add({*l});
+            l = l->next;
+        }
+        else
+        {
+            ret.add({*r});
+            r = r->next;
+        }
+    }
+
+    //! copy the rest
+    for(auto rest = (l ? l : r);  rest;  rest = rest->next)  ret.add({*rest});
+
+    return ret;
 }
 
 
