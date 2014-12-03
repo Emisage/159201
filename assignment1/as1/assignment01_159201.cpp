@@ -156,3 +156,17 @@ int main()
     return 0;
 }
 
+
+//! output:
+//Matrix dimensions 4 4
+//ads> added:0 1 1
+
+//ads> added:1 2 2
+
+//ads> added:2 1 3
+
+//ads> added:2 3 4
+
+//ads> added:3 3 5
+
+//size : 5
