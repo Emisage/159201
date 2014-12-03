@@ -5,6 +5,9 @@
 
 namespace ads{
 
+/**
+ * @brief Node
+ */
 struct Node
 {
     int row     ;
@@ -13,15 +16,34 @@ struct Node
     Node *next  ;
 };
 
+
+/**
+ * @brief operator << for Node
+ */
 inline std::ostream&
 operator<<(std::ostream& os, Node const& rhs)
 {
     return os << rhs.row << " " << rhs.column << " " << rhs.value << std::endl;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+
+
+//! forward declarations
+template<typename T> class SparseMatrix;
+template<typename T> std::ostream& print_data(SparseMatrix<T> const& m);
+
+
+/**
+ * @brief SparseMatrix
+ *
+ * using linked list for data storing
+ */
 template<typename Node>
 class SparseMatrix
 {
+    friend std::ostream& print_data<Node>(SparseMatrix const& m);
 public:
     using ValueType =   decltype(Node::value);
     using IndexType =   decltype(Node::row);
@@ -146,27 +168,22 @@ private:
 };
 
 
+template<typename T>
+inline std::ostream& print_data(SparseMatrix<T> const& m)
+{
+    for(auto curr = m.head_; curr; curr = curr->next)
+        std::cout << curr->value << " ";
+    return std::cout;
+}
+
+
 }//namespace
 
 int main()
 {
     ads::SparseMatrix<ads::Node> m{"matrix1.txt"};
     std::cout << "size : " <<m.data_size() << std::endl;
+    ads::print_data(m);
 
     return 0;
 }
-
-
-//! output:
-//Matrix dimensions 4 4
-//ads> added:0 1 1
-
-//ads> added:1 2 2
-
-//ads> added:2 1 3
-
-//ads> added:2 3 4
-
-//ads> added:3 3 5
-
-//size : 5
