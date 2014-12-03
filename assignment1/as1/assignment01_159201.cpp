@@ -72,30 +72,28 @@ public:
     SparseMatrix& operator=(SparseMatrix const&)    = delete;
     SparseMatrix& operator=(SparseMatrix &&)        = delete;
 
+    //! default Ctor
     SparseMatrix():
-        head_{nullptr},
-        tail_{nullptr},
-        rows_{0},
-        cols_{0}
+        head_{nullptr}, tail_{nullptr}, rows_{0}, cols_{0}
     {}
 
+    //! Ctor with dimensions
     SparseMatrix(SizeType rows, SizeType cols):
-        head_{nullptr},
-        tail_{nullptr},
-        rows_{rows},
-        cols_{cols}
+        head_{nullptr}, tail_{nullptr}, rows_{rows}, cols_{cols}
     {}
 
+    //! Ctor with file name
     explicit SparseMatrix(std::string fn):
         SparseMatrix{}
     {
         construct_linked_list(fn);
     }
 
-    SparseMatrix(SparseMatrix && sm) noexcept :
-        SparseMatrix(sm.head_, sm.tail_, sm.rows_, sm.cols_)
+    //! move Ctor
+    SparseMatrix(SparseMatrix && m) noexcept :
+        SparseMatrix{m.head_, m.tail_, m.rows_, m.cols_}
     {
-        sm.head_ = sm.tail_ = nullptr;
+        m.head_ = m.tail_ = nullptr;
     }
 
 
