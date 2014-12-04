@@ -268,8 +268,14 @@ private:
 
 int main( int argc, char** argv )
 {
-    if(argc != 2)
-        throw std::runtime_error{"cannot read file "};
+    try{
+        if(argc != 2)
+            throw std::runtime_error{"Cannot read file."};
+    }catch (std::runtime_error e)
+    {
+        std::cerr << e.what() << " Programme terminated.\n";
+        return -1;
+    }
 
     auto result = ads::RpnParser{}.parse(argv[1]);
     std::cout << "The result is " << result << std::endl;
