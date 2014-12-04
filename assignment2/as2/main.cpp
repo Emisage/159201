@@ -175,7 +175,7 @@ public:
 
     int parse(std::string const& fn)
     {
-       return do_parse(fn);
+       return do_parse_and_evaluate(fn);
     }
 
 private:
@@ -215,7 +215,7 @@ private:
     }
 
     //! abstraction I
-    int do_parse(std::string const& fn)
+    int do_parse_and_evaluate(std::string const& fn)
     {
         for(std::ifstream ifs{fn}; !ifs.eof();/* */)
         {
@@ -230,7 +230,7 @@ private:
                 if(std::isdigit(*it))
                 {
                     auto peek = it;
-                    for(; peek != expr.cend() and not std::isspace(*peek); ++peek);
+                    for(; peek != expr.cend() and !std::isspace(*peek); ++peek);
                     auto num = std::stoi(std::string(it, peek));
                     stk_.push(num);
 
