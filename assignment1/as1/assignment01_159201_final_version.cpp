@@ -84,7 +84,6 @@ class SparseMatrix
 {
     friend SparseMatrix
     operator+  <Node> (SparseMatrix const& lhs, SparseMatrix const& rhs);
-
     friend std::ostream&
     operator<< <Node> (std::ostream& os, SparseMatrix<Node> const& rhs);
 
@@ -92,10 +91,6 @@ public:
     using ValueType =   decltype(Node::value);
     using IndexType =   decltype(Node::row);
     using SizeType  =   std::size_t;
-
-    SparseMatrix(SparseMatrix const&)               = delete;
-    SparseMatrix& operator=(SparseMatrix const&)    = delete;
-    SparseMatrix& operator=(SparseMatrix &&)        = delete;
 
     //! default Ctor
     SparseMatrix():
@@ -121,7 +116,6 @@ public:
         m.head_ = m.tail_ = nullptr;
     }
 
-
     bool empty()const
     {
         return !head_ and !tail_;
@@ -142,7 +136,13 @@ public:
         deallocate_data();
     }
 
+    SparseMatrix(SparseMatrix const&)               = delete;
+    SparseMatrix& operator=(SparseMatrix const&)    = delete;
+    SparseMatrix& operator=(SparseMatrix &&)        = delete;
+
+
 private:
+
     Node* head_;
     Node* tail_;
     SizeType rows_;
@@ -161,14 +161,15 @@ private:
      */
     void add(Node && node)
     {
-        if(empty()){
-            head_ = tail_ = new Node(std::move(node));
+        if(empty())
+        {
+            head_ = tail_   =   new Node(std::move(node));
         }
-        else{
-            tail_->next =   new Node(std::move(node));
-            tail_       =   tail_->next;
+        else
+        {
+            tail_->next     =   new Node(std::move(node));
+            tail_           =   tail_->next;
         }
-//        std::cout << "ads> added:" << *tail_ << std::endl;
     }
 
     /**
@@ -180,7 +181,6 @@ private:
         std::getline(ifs, line);
         std::stringstream stream{line};
         stream >> rows_ >> cols_;
-//        std::cout << "Matrix dimensions " << rows_ << " " << cols_ << std::endl;
         return ifs;
     }
 
