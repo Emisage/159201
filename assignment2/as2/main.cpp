@@ -233,6 +233,7 @@ private:
                     for(; peek != expr.cend() and !std::isspace(*peek); ++peek);
                     auto num = std::stoi(std::string(it, peek));
                     stk_.push(num);
+                    it = peek;
 
                     std::cout << "reading number "   << num << std::endl;
                     continue;
@@ -258,7 +259,7 @@ private:
 ///////////////////////////////////////////////////////////////////////////////
 
 
-int main()
+int main(int argc, char** argv )
 {
     //! test for List
 //    ads::List<int> l;
@@ -277,13 +278,13 @@ int main()
 
 
     //! test for parser
+//    if(argc==2) input_file.open(argv[1]);
+//	else { cout<< "cannot read file " << argv[1] << endl; exit(0);}
+    if(argc != 2)
+        throw std::runtime_error{"cannot read file "};
+
     ads::RpnParser parser;
+    std::cout << parser.parse(argv[1]);
 
     return 0;
 }
-
-
-//! output  :
-//!
-//6 5 4 3 2 1
-//6 5 4 3 2 1
