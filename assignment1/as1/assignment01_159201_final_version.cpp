@@ -1,8 +1,10 @@
 //!
-//! @author Wang WeiXu 13114633
+//! @author Yue Wang
 //! @date   04.12.2014
-//! @brief  sparse matrix implemented for assignment 1 ,159.201 s3 2014.
 //!
+//! @brief  Sparse Matrix using linked list as underlying data structure
+//!
+
 
 #include <iostream>
 #include <fstream>
