@@ -2,8 +2,6 @@
 #include <stdexcept>
 #include <string>
 #include <fstream>
-#include <sstream>
-#include <vector>
 #include <algorithm>
 #include <map>
 #include <functional>
@@ -146,10 +144,12 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////
 
+
 template<typename T>    T add (T lhs, T rhs){   return lhs + rhs;   }
 template<typename T>    T mns (T lhs, T rhs){   return lhs - rhs;   }
 template<typename T>    T mul (T lhs, T rhs){   return lhs * rhs;   }
 template<typename T>    T div (T lhs, T rhs){   return lhs / rhs;   }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -157,14 +157,16 @@ template<typename T>    T div (T lhs, T rhs){   return lhs / rhs;   }
 class RpnParser
 {
 public:
+    using Evaluator = std::map<char, std::function<int(int,int)>>;
+
     RpnParser():
         stk_{},
         eval_
         {
-                {'+', ads::add<int>},
-                {'-', ads::mns<int>},
-                {'*', ads::mul<int>},
-                {'/', ads::div<int>},
+            {'+', ads::add<int>},
+            {'-', ads::mns<int>},
+            {'*', ads::mul<int>},
+            {'/', ads::div<int>}
         }
     {}
 
@@ -175,28 +177,50 @@ public:
 
 private:
     ads::Stack<int> stk_{};
-    const std::map<char, std::function<int(int,int)>> eval_;
+    const Evaluator eval_;
+
+    //! abstraction II
+    void push(int operand)
+    {
+        stk_.push(operand);
+    }
+
+    //! abstraction II
+    int evaluate(char op, int lhs, int rhs)
+    {
+        return eval_.at(op)(lhs, rhs);
+    }
 
     //! abstraction II
     bool is_operator(char ch) const
     {
-//        return operators_.cend() != std::find(operators_.cbegin(),operators_.cend(),ch);
+        return eval_.cend() != eval_.find(ch);
     }
 
     //! abstraction II
-    int get_operand()
+    int get_operand_and_check()
     {
         if(stk_.empty())
-            throw std::runtime_error{"too many operators!"};
+            throw std::logic_error{"too many operators!"};
         auto operand = stk_.top();
         stk_.pop();
         return operand;
     }
 
+    //! abstraction II
+    int get_result_and_check()
+    {
+        if(1 != stk_.size())
+            throw std::logic_error{"too many numbers!"};
+        auto result = stk_.top();
+        stk_.pop();
+        return result;
+    }
+
     //! abstraction I
     int do_parse(std::string const& fn)
     {
-        for(std::ifstream ifs{fn}; not ifs.eof();/* */)
+        for(std::ifstream ifs{fn}; !ifs.eof();/* */)
         {
             std::string expr;
             std::getline(ifs, expr);
@@ -206,7 +230,6 @@ private:
                 {
                     continue;
                 }
-
                 if(std::isdigit(*it))
                 {
                     auto peek = it;
@@ -214,34 +237,21 @@ private:
                     auto num = std::stoi(std::string(it, peek));
                     stk_.push(num);
 
-                    std::cout << "reading : " << num << std::endl;
+                    std::cout << "reading number "   << num << std::endl;
                     continue;
                 }
-
-                if(this->is_operator(*it))
+                if(is_operator(*it))
                 {
-
-                    auto rhs = get_operand();
-                    auto lhs = get_operand();
-//                    switch(*it)
-//                    {
-//                    case '+':
-//                        stk_.push(lhs + rhs);
-//                        break;
-//                    case '-':
-//                        stk_.push(lhs - rhs);
-//                        break;
-//                    case '*':
-//                        stk_.push(lhs * rhs);
-//                        break;
-//                    case '/':
-//                        stk_.push(lhs / rhs);
-//                    }
+                    std::cout << "reading operator " << *it << std::endl;
+                    auto rhs = get_operand_and_check();
+                    auto lhs = get_operand_and_check();
+                    push(evaluate(*it, lhs, rhs));
                 }
             }
         }
+        auto result = get_result_and_check();
+        std::cout << "The result is " << result << std::endl;
     }
-
 };
 
 
