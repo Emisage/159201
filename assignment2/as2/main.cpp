@@ -8,8 +8,14 @@ namespace ads {
 template<typename T>
 class List
 {
-    struct Node{    T value;    Node* next; };
+    struct Node
+    {
+        T value;
+        Node* next;
+    };
 public:
+    using SizeType = std::size_t;
+
     List() = default;
 
     T const& front() const
@@ -82,18 +88,61 @@ private:
         }
     }
 };
+///////////////////////////////////////////////////////////////////////////////
 
+template<typename T, typename Container = ads::List<T> >
+class Stack
+{
+public:
+    using SizeType = typename Container::SizeType;
 
+    Stack() = default;
+
+    void push(T const& new_value)
+    {
+        data_.push_front(new_value);
+    }
+
+    T const& top() const
+    {
+        return data_.front();
+    }
+
+    void pop()
+    {
+        data_.pop_front();
+    }
+
+    SizeType size() const
+    {
+        return data_.size();
+    }
+
+    bool empty() const
+    {
+        return data_.empty();
+    }
+
+private:
+    Container data_{};
+};
 
 }//namespace
 
 
 int main()
 {
+    //! test for List
     ads::List<int> l;
     for(auto i : {1,2,3,4,5,6}) l.push_front(i);
     for(;   not l.empty();  l.pop_front())
         std::cout << l.front() << std::endl;
+
+    //!
+    ads::Stack<int> stk;
+    for(auto i : {1,2,3,4,5,6}) stk.push(i);
+    for(;   not stk.empty();  stk.pop())
+        std::cout << stk.top() << std::endl;
 
     return 0;
 }
