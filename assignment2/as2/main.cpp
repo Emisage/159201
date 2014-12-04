@@ -148,51 +148,36 @@ private:
 ///////////////////////////////////////////////////////////////////////////////
 
 
-template<typename T>    T add (T lhs, T rhs){   return lhs + rhs;   }
-template<typename T>    T mns (T lhs, T rhs){   return lhs - rhs;   }
-template<typename T>    T mul (T lhs, T rhs){   return lhs * rhs;   }
-template<typename T>    T div (T lhs, T rhs){   return lhs / rhs;   }
-
-
-///////////////////////////////////////////////////////////////////////////////
-
-
-class RpnParser
+struct RpnParser
 {
-public:
-    using Evaluator = std::map<char, std::function<int(int,int)>>;
-
-    RpnParser():
-        stk_{},
-        eval_
-        {
-            {'+', ads::add<int>},
-            {'-', ads::mns<int>},
-            {'*', ads::mul<int>},
-            {'/', ads::div<int>}
-        }
-    {}
-
     int parse(std::string const& fn)
     {
        return do_parse_and_evaluate(fn);
     }
-
 private:
+    struct Eval
+    {
+        bool is_evaluable(char op) const
+        {
+            return dic_.find(op) != dic_.cend();
+        }
+
+        int operator ()(char op, int lhs, int rhs) const
+        {
+            return dic_.at(op)(lhs, rhs);
+        }
+
+        std::map<char, std::function<int(int,int)> > const dic_ =
+        {
+            {   '+', [](int lhs, int rhs){  return lhs + rhs;}  },
+            {   '-', [](int lhs, int rhs){  return lhs - rhs;}  },
+            {   '*', [](int lhs, int rhs){  return lhs * rhs;}  },
+            {   '/', [](int lhs, int rhs){  return lhs / rhs;}  },
+        };
+    };
+
     ads::Stack<int> stk_;
-    const Evaluator eval_;
-
-    //! abstraction II
-    int evaluate(char op, int lhs, int rhs)
-    {
-        return eval_.at(op)(lhs, rhs);
-    }
-
-    //! abstraction II
-    bool is_operator(char ch) const
-    {
-        return eval_.cend() != eval_.find(ch);
-    }
+    const Eval eval_;
 
     //! abstraction II
     int get_operand_and_check() throw()
@@ -241,12 +226,12 @@ private:
                 std::cout << "reading number "   << num << std::endl;
                 continue;
             }
-            if(is_operator(*it))
+            if(eval_.is_evaluable(*it))
             {
                 std::cout << "reading operator " << *it << std::endl;
                 auto rhs = get_operand_and_check();
                 auto lhs = get_operand_and_check();
-                stk_.push(evaluate(*it, lhs, rhs));
+                stk_.push(eval_(*it, lhs, rhs));
                 continue;
             }
         }
@@ -263,10 +248,12 @@ private:
 
 int main( int argc, char** argv )
 {
-    try{
+    try
+    {
         if(argc != 2)
             throw std::runtime_error{"Cannot read file.\n"};
-    }catch (std::runtime_error e)
+    }
+    catch (std::runtime_error e)
     {
         std::cerr << e.what() << "Programme terminated.\n";
         return -1;
