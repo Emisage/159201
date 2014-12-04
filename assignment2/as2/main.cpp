@@ -258,32 +258,13 @@ private:
 ///////////////////////////////////////////////////////////////////////////////
 
 
-int main()
+int main( int argc, char** argv )
 {
-    //! test for List
-//    ads::List<int> l;
-//    for(auto i : {1,2,3,4,5,6}) l.push_front(i);
-//    for(;   not l.empty();  l.pop_front())
-//        std::cout << l.front() << " ";
-//    std::cout << std::endl;
+    if(argc != 2)
+        throw std::runtime_error{"cannot read file "};
 
-
-    //! test for stack
-//    ads::Stack<int> stk;
-//    for(auto i : {1,2,3,4,5,6}) stk.push(i);
-//    for(;   not stk.empty();  stk.pop())
-//        std::cout << stk.top() << " ";
-//    std::cout << std::endl;
-
-
-    //! test for parser
-//    if(argc==2) input_file.open(argv[1]);
-//	else { cout<< "cannot read file " << argv[1] << endl; exit(0);}
-//    if(argc != 2)
-//        throw std::runtime_error{"cannot read file "};
-
-    ads::RpnParser parser;
-    std::cout << parser.parse("RPN4.txt");
+    auto result = ads::RpnParser{}.parse(argv[1]);
+    std::cout << "The result is " << result << std::endl;
 
     return 0;
 }
