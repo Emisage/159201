@@ -226,33 +226,28 @@ private:
     {
         std::ifstream ifs{fn};
         check_file(ifs);
-        for(std::string expr; !ifs.eof(); /* */)
+        for(std::string expr; !ifs.eof(); )
         {
             std::getline(ifs, expr);
-            for(auto it = expr.cbegin(); it != expr.cend(); ++it)
+            auto it = expr.cbegin();
+            for( ; it != expr.cend()  and  std::isspace(*it); ++it);
+            if(std::isdigit(*it))
             {
-                if(std::isspace(*it))
-                {
-                    continue;
-                }
-                if(std::isdigit(*it))
-                {
-                    auto peek = it;
-                    for(; peek != expr.cend() and !std::isspace(*peek); ++peek);
-                    auto num = std::stoi(std::string(it, peek));
-                    stk_.push(num);
-                    it = peek;
-                    std::cout << "reading number "   << num << std::endl;
-                    continue;
-                }
-                if(is_operator(*it))
-                {
-                    std::cout << "reading operator " << *it << std::endl;
-                    auto rhs = get_operand_and_check();
-                    auto lhs = get_operand_and_check();
-                    stk_.push(evaluate(*it, lhs, rhs));
-                    continue;
-                }
+                auto peek = it;
+                for(; peek != expr.cend() and !std::isspace(*peek); ++peek);
+                auto num = std::stoi(std::string(it, peek));
+                stk_.push(num);
+                it = peek;
+                std::cout << "reading number "   << num << std::endl;
+                continue;
+            }
+            if(is_operator(*it))
+            {
+                std::cout << "reading operator " << *it << std::endl;
+                auto rhs = get_operand_and_check();
+                auto lhs = get_operand_and_check();
+                stk_.push(evaluate(*it, lhs, rhs));
+                continue;
             }
         }
         return get_result_and_check();
@@ -270,10 +265,10 @@ int main( int argc, char** argv )
 {
     try{
         if(argc != 2)
-            throw std::runtime_error{"Cannot read file."};
+            throw std::runtime_error{"Cannot read file.\n"};
     }catch (std::runtime_error e)
     {
-        std::cerr << e.what() << " Programme terminated.\n";
+        std::cerr << e.what() << "Programme terminated.\n";
         return -1;
     }
 
