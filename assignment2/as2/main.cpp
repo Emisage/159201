@@ -155,18 +155,9 @@ struct RpnParser
        return do_parse_and_evaluate(fn);
     }
 private:
-    struct Eval
-    {
-        bool is_evaluable(char op) const
-        {
-            return dic_.find(op) != dic_.cend();
-        }
-
-        int operator ()(char op, int lhs, int rhs) const
-        {
-            return dic_.at(op)(lhs, rhs);
-        }
-
+    struct Eval{
+        bool is_evaluable(char op)  const   {return dic_.find(op) != dic_.cend();}
+        int operator ()(char op, int lhs, int rhs)  const   {return dic_.at(op)(lhs, rhs);}
         std::map<char, std::function<int(int,int)> > const dic_ =
         {
             {   '+', [](int lhs, int rhs){  return lhs + rhs;}  },
@@ -174,10 +165,9 @@ private:
             {   '*', [](int lhs, int rhs){  return lhs * rhs;}  },
             {   '/', [](int lhs, int rhs){  return lhs / rhs;}  },
         };
-    };
-
+    }
+    const eval_;
     ads::Stack<int> stk_;
-    const Eval eval_;
 
     //! abstraction II
     int get_operand_and_check() throw()
