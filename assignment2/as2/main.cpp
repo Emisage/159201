@@ -176,14 +176,8 @@ public:
     }
 
 private:
-    ads::Stack<int> stk_{};
+    ads::Stack<int> stk_;
     const Evaluator eval_;
-
-    //! abstraction II
-    void push(int operand)
-    {
-        stk_.push(operand);
-    }
 
     //! abstraction II
     int evaluate(char op, int lhs, int rhs)
@@ -245,12 +239,12 @@ private:
                     std::cout << "reading operator " << *it << std::endl;
                     auto rhs = get_operand_and_check();
                     auto lhs = get_operand_and_check();
-                    push(evaluate(*it, lhs, rhs));
+                    stk_.push(evaluate(*it, lhs, rhs));
                 }
             }
         }
-        auto result = get_result_and_check();
-        std::cout << "The result is " << result << std::endl;
+
+        return get_result_and_check();
     }
 };
 
