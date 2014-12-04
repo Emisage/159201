@@ -195,7 +195,7 @@ private:
     }
 
     //! abstraction II
-    int get_operand_and_check()
+    int get_operand_and_check() throw()
     {
         if(stk_.empty())
             throw std::logic_error{"too many operators!"};
@@ -205,7 +205,7 @@ private:
     }
 
     //! abstraction II
-    int get_result_and_check()
+    int get_result_and_check() throw()
     {
         if(1 != stk_.size())
             throw std::logic_error{"too many numbers!"};
@@ -214,12 +214,20 @@ private:
         return result;
     }
 
+    //! abstraction II
+    void check_file(std::ifstream& ifs) throw()
+    {
+        if(!ifs.good())
+            throw std::runtime_error{"Bad file name"};
+    }
+
     //! abstraction I
     int do_parse_and_evaluate(std::string const& fn)
     {
-        for(std::ifstream ifs{fn}; !ifs.eof();/* */)
+        std::ifstream ifs{fn};
+        check_file(ifs);
+        for(std::string expr; !ifs.eof(); /* */)
         {
-            std::string expr;
             std::getline(ifs, expr);
             for(auto it = expr.cbegin(); it != expr.cend(); ++it)
             {
