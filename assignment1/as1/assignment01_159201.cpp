@@ -1,3 +1,9 @@
+//!
+//! @author Wang WeiXu 13114633
+//! @date   04.12.2014
+//! @brief  sparse matrix implemented for assignment 1 ,159.201 s3 2014.
+//!
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -17,12 +23,15 @@ struct Node
 };
 
 
+//! outpus for Node
 inline std::ostream&
 operator<<(std::ostream& os, Node const& rhs)
 {
     return os << rhs.row << " " << rhs.column << " " << rhs.value << std::endl;
 }
 
+
+//! + for Node
 inline Node
 operator +(Node const& lhs, Node const& rhs)
 {
@@ -32,11 +41,15 @@ operator +(Node const& lhs, Node const& rhs)
     return ret;
 }
 
+
+//! check if the same position
 inline bool is_same_position(Node const& lhs, Node const& rhs)
 {
     return lhs.row == rhs.row and lhs.column == rhs.column;
 }
 
+
+//! check if lhs is preceeding rhs
 inline bool is_precedent(Node const& lhs, Node const& rhs)
 {
     if(lhs.row < rhs.row)       return true;
@@ -59,6 +72,11 @@ template<typename T>
 std::ostream& operator<<(std::ostream& os, SparseMatrix<T> const& rhs);
 
 
+/**
+ * @brief The SparseMatrix class
+ *
+ * using linked list for data storing
+ */
 template<typename Node>
 class SparseMatrix
 {
@@ -238,6 +256,7 @@ private:
 };
 
 
+//! print the matrix
 template<typename T>
 std::ostream& operator<<(std::ostream& os, SparseMatrix<T> const& rhs)
 {
@@ -315,11 +334,9 @@ int main( int argc, char** argv )
     std::cout << "Matrix 1: ";
     lhs.print_data() << std::endl;
     std::cout << lhs;
-
     std::cout << "Matrix 2: ";
     rhs.print_data() << std::endl;
     std::cout << rhs;
-
     std::cout << "Matrix Result: ";
     sum.print_data() << std::endl;
     std::cout << sum;
