@@ -221,7 +221,7 @@ private:
         {
             std::string expr;
             std::getline(ifs, expr);
-            for(auto it = expr.cbegin(); it != expr.cend(); /* */)
+            for(auto it = expr.cbegin(); it != expr.cend(); ++it)
             {
                 if(std::isspace(*it))
                 {
@@ -234,7 +234,6 @@ private:
                     auto num = std::stoi(std::string(it, peek));
                     stk_.push(num);
                     it = peek;
-
                     std::cout << "reading number "   << num << std::endl;
                     continue;
                 }
@@ -259,7 +258,7 @@ private:
 ///////////////////////////////////////////////////////////////////////////////
 
 
-int main(int argc, char** argv )
+int main()
 {
     //! test for List
 //    ads::List<int> l;
@@ -280,11 +279,11 @@ int main(int argc, char** argv )
     //! test for parser
 //    if(argc==2) input_file.open(argv[1]);
 //	else { cout<< "cannot read file " << argv[1] << endl; exit(0);}
-    if(argc != 2)
-        throw std::runtime_error{"cannot read file "};
+//    if(argc != 2)
+//        throw std::runtime_error{"cannot read file "};
 
     ads::RpnParser parser;
-    std::cout << parser.parse(argv[1]);
+    std::cout << parser.parse("RPN4.txt");
 
     return 0;
 }
