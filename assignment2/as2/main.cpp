@@ -4,7 +4,9 @@
 
 namespace ads {
 
-
+/**
+ * @brief The List class
+ */
 template<typename T>
 class List
 {
@@ -90,6 +92,9 @@ private:
 };
 ///////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @brief The Stack class
+ */
 template<typename T, typename Container = ads::List<T> >
 class Stack
 {
@@ -136,14 +141,20 @@ int main()
     ads::List<int> l;
     for(auto i : {1,2,3,4,5,6}) l.push_front(i);
     for(;   not l.empty();  l.pop_front())
-        std::cout << l.front() << std::endl;
+        std::cout << l.front() << " ";
+    std::cout << std::endl;
 
-    //!
+    //! test for stack
     ads::Stack<int> stk;
     for(auto i : {1,2,3,4,5,6}) stk.push(i);
     for(;   not stk.empty();  stk.pop())
-        std::cout << stk.top() << std::endl;
+        std::cout << stk.top() << " ";
+    std::cout << std::endl;
 
     return 0;
 }
 
+//! output  :
+//!
+//6 5 4 3 2 1
+//6 5 4 3 2 1
