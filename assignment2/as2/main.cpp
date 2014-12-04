@@ -4,26 +4,20 @@
 
 namespace ads {
 
-template<typename Data> struct Node
-{
-    Data value;
-    Node* next;
-};
 
-template<typename Node>
+template<typename T>
 class List
 {
+    struct Node{    T value;    Node* next; };
 public:
-    using DataType = decltype(Node::Data);
-
     List() = default;
 
-    void push_front(DataType const& new_data)
+    void push_front(T const& new_data)
     {
         do_push_front(new_data);
     }
 
-    DataType const& front()const
+    T const& front() const
     {
         return head_->value;
     }
@@ -33,9 +27,14 @@ public:
         do_pop();
     }
 
-    bool empty()const
+    bool empty() const
     {
         return !head_ and !tail_;
+    }
+
+    std::size_t size() const
+    {
+        return size_;
     }
 
 private:
@@ -43,12 +42,12 @@ private:
     Node* tail_{nullptr};
     std::size_t size_{0};
 
-    void do_push_front(DataType const& new_data)
+    void do_push_front(T const& new_value)
     {
         if(empty())
-            head_ = tail_   =   new Node{new_data, nullptr};
+            head_ = tail_   =   new Node{new_value, nullptr};
         else
-            head_           =   new Node{new_data, head_};
+            head_           =   new Node{new_value, head_};
         ++size_;
     }
 
@@ -68,7 +67,12 @@ private:
 
 int main()
 {
-    ads::List<ads::Node<int>> l;
+    ads::List<int> l;
+    l.push_front(1);
+    l.push_front(42);
+    std::cout << l.size() << std::endl;
+    std::cout << l.front() << std::endl;
+
     return 0;
 }
 
