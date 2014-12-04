@@ -1,5 +1,10 @@
 #include <iostream>
 #include <stdexcept>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <algorithm>
 
 
 namespace ads {
@@ -100,6 +105,10 @@ class Stack
 {
 public:
     using SizeType = typename Container::SizeType;
+    Stack(Stack const&)             =   delete;
+    Stack(Stack &&)                 =   delete;
+    Stack& operator=(Stack const&)  =   delete;
+    Stack& operator=(Stack &&)      =   delete;
 
     Stack() = default;
 
@@ -132,6 +141,91 @@ private:
     Container data_{};
 };
 
+
+///////////////////////////////////////////////////////////////////////////////
+
+class RpnParser
+{
+public:
+    RpnParser() = default;
+
+    int parse(std::string const& fn)
+    {
+       return do_parse(fn);
+    }
+
+private:
+    ads::Stack<int> stk_{};
+//    const std::vector<char> operators_{'+', '-', '*', '/'};
+
+    //! abstraction II
+    bool is_operator(char ch) const
+    {
+        return operators_.cend() != std::find(operators_.cbegin(),operators_.cend(),ch);
+    }
+
+    //! abstraction II
+    int get_operand()
+    {
+        if(stk_.empty())
+            throw std::runtime_error{"too many operators!"};
+        auto operand = stk_.top();
+        stk_.pop();
+        return operand;
+    }
+
+    //! abstraction I
+    int do_parse(std::string const& fn)
+    {
+        for(std::ifstream ifs{fn}; not ifs.eof();/* */)
+        {
+            std::string expr;
+            std::getline(ifs, expr);
+            for(auto it = expr.cbegin(); it != expr.cend(); /* */)
+            {
+                if(std::isspace(*it))
+                {
+                    continue;
+                }
+
+                if(std::isdigit(*it))
+                {
+                    auto peek = it;
+                    for(; peek != expr.cend() and not std::isspace(*peek); ++peek);
+                    auto num = std::stoi(std::string(it, peek));
+                    stk_.push(num);
+
+                    std::cout << "reading : " << num << std::endl;
+                    continue;
+                }
+
+                if(this->is_operator(*it))
+                {
+
+                    auto rhs = get_operand();
+                    auto lhs = get_operand();
+//                    switch(*it)
+//                    {
+//                    case '+':
+//                        stk_.push(lhs + rhs);
+//                        break;
+//                    case '-':
+//                        stk_.push(lhs - rhs);
+//                        break;
+//                    case '*':
+//                        stk_.push(lhs * rhs);
+//                        break;
+//                    case '/':
+//                        stk_.push(lhs / rhs);
+//                    }
+                }
+            }
+        }
+    }
+
+};
+
+
 }//namespace
 
 
@@ -144,6 +238,7 @@ int main()
         std::cout << l.front() << " ";
     std::cout << std::endl;
 
+
     //! test for stack
     ads::Stack<int> stk;
     for(auto i : {1,2,3,4,5,6}) stk.push(i);
@@ -151,8 +246,13 @@ int main()
         std::cout << stk.top() << " ";
     std::cout << std::endl;
 
+
+    //! test for parser
+    ads::RpnParser parser;
+
     return 0;
 }
+
 
 //! output  :
 //!
