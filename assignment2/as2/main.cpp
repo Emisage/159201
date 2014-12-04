@@ -12,19 +12,19 @@ class List
 public:
     List() = default;
 
-    void push_front(T const& new_data)
-    {
-        do_push_front(new_data);
-    }
-
     T const& front() const
     {
         return head_->value;
     }
 
-    void pop()
+    void push_front(T const& new_data)
     {
-        do_pop();
+        do_push_front(new_data);
+    }
+
+    void pop_front()
+    {
+        do_pop_front();
     }
 
     bool empty() const
@@ -37,10 +37,21 @@ public:
         return size_;
     }
 
+    ~List()
+    {
+        do_deallocate();
+    }
+
 private:
     Node* head_{nullptr};
     Node* tail_{nullptr};
     std::size_t size_{0};
+
+    void do_deallocate()
+    {
+        for(Node *ptr{head_}, *tmp;  (tmp=ptr);  delete tmp)
+            ptr = ptr->next;
+    }
 
     void do_push_front(T const& new_value)
     {
@@ -51,12 +62,24 @@ private:
         ++size_;
     }
 
-    void do_pop()
+    void do_pop_front()
     {
         if(empty())
             throw std::runtime_error{"underflow!"};
-        head_ =head_->next;
-        --size_;
+
+        if(head_ == tail_)
+        {
+            delete head_;
+            head_ = tail_ = nullptr;
+            size_ = 0;
+        }
+        else
+        {
+            auto tmp = head_;
+            head_ = head_->next;
+            delete tmp;
+            --size_;
+        }
     }
 };
 
@@ -68,10 +91,9 @@ private:
 int main()
 {
     ads::List<int> l;
-    l.push_front(1);
-    l.push_front(42);
-    std::cout << l.size() << std::endl;
-    std::cout << l.front() << std::endl;
+    for(auto i : {1,2,3,4,5,6}) l.push_front(i);
+    for(;   not l.empty();  l.pop_front())
+        std::cout << l.front() << std::endl;
 
     return 0;
 }
