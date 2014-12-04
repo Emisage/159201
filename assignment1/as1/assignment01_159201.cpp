@@ -304,9 +304,12 @@ SparseMatrix<T> operator+(SparseMatrix<T> const& lhs, SparseMatrix<T> const& rhs
 
 }//namespace
 
-int main()
+int main( int argc, char** argv )
 {
-    ads::SparseMatrix<ads::Node> lhs{"matrix1.txt"}, rhs{"matrix2.txt"};
+    if(argc!=3)
+        std::cout << "needs two matrices\n";
+
+    ads::SparseMatrix<ads::Node> lhs{argv[1]}, rhs{argv[2]};
     auto sum = lhs + rhs;
 
     std::cout << "Matrix 1: ";
