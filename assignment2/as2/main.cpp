@@ -243,10 +243,10 @@ private:
                     auto rhs = get_operand_and_check();
                     auto lhs = get_operand_and_check();
                     stk_.push(evaluate(*it, lhs, rhs));
+                    continue;
                 }
             }
         }
-
         return get_result_and_check();
     }
 };
@@ -261,19 +261,19 @@ private:
 int main()
 {
     //! test for List
-    ads::List<int> l;
-    for(auto i : {1,2,3,4,5,6}) l.push_front(i);
-    for(;   not l.empty();  l.pop_front())
-        std::cout << l.front() << " ";
-    std::cout << std::endl;
+//    ads::List<int> l;
+//    for(auto i : {1,2,3,4,5,6}) l.push_front(i);
+//    for(;   not l.empty();  l.pop_front())
+//        std::cout << l.front() << " ";
+//    std::cout << std::endl;
 
 
     //! test for stack
-    ads::Stack<int> stk;
-    for(auto i : {1,2,3,4,5,6}) stk.push(i);
-    for(;   not stk.empty();  stk.pop())
-        std::cout << stk.top() << " ";
-    std::cout << std::endl;
+//    ads::Stack<int> stk;
+//    for(auto i : {1,2,3,4,5,6}) stk.push(i);
+//    for(;   not stk.empty();  stk.pop())
+//        std::cout << stk.top() << " ";
+//    std::cout << std::endl;
 
 
     //! test for parser
