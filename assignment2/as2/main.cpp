@@ -5,6 +5,8 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
+#include <map>
+#include <functional>
 
 
 namespace ads {
@@ -144,10 +146,27 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////
 
+template<typename T>    T add (T lhs, T rhs){   return lhs + rhs;   }
+template<typename T>    T mns (T lhs, T rhs){   return lhs - rhs;   }
+template<typename T>    T mul (T lhs, T rhs){   return lhs * rhs;   }
+template<typename T>    T div (T lhs, T rhs){   return lhs / rhs;   }
+
+///////////////////////////////////////////////////////////////////////////////
+
+
 class RpnParser
 {
 public:
-    RpnParser() = default;
+    RpnParser():
+        stk_{},
+        eval_
+        {
+                {'+', ads::add<int>},
+                {'-', ads::mns<int>},
+                {'*', ads::mul<int>},
+                {'/', ads::div<int>},
+        }
+    {}
 
     int parse(std::string const& fn)
     {
@@ -156,12 +175,12 @@ public:
 
 private:
     ads::Stack<int> stk_{};
-//    const std::vector<char> operators_{'+', '-', '*', '/'};
+    const std::map<char, std::function<int(int,int)>> eval_;
 
     //! abstraction II
     bool is_operator(char ch) const
     {
-        return operators_.cend() != std::find(operators_.cbegin(),operators_.cend(),ch);
+//        return operators_.cend() != std::find(operators_.cbegin(),operators_.cend(),ch);
     }
 
     //! abstraction II
