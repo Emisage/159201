@@ -58,7 +58,7 @@ public:
 private:
     Node* head_{nullptr};
     Node* tail_{nullptr};
-    std::size_t size_{0};
+    SizeType size_{0};
 
     void do_deallocate()
     {
@@ -108,10 +108,6 @@ class Stack
 {
 public:
     using SizeType = typename Container::SizeType;
-    Stack(Stack const&)             =   delete;
-    Stack(Stack &&)                 =   delete;
-    Stack& operator=(Stack const&)  =   delete;
-    Stack& operator=(Stack &&)      =   delete;
 
     Stack() = default;
 
@@ -148,16 +144,30 @@ private:
 ///////////////////////////////////////////////////////////////////////////////
 
 
+/**
+ * @brief The RpnParser
+ */
 struct RpnParser
 {
     int parse(std::string const& fn)
     {
        return do_parse_and_evaluate(fn);
     }
+
 private:
-    struct Eval{
-        bool is_evaluable(char op)  const   {return dic_.find(op) != dic_.cend();}
-        int operator ()(char op, int lhs, int rhs)  const   {return dic_.at(op)(lhs, rhs);}
+
+    struct Eval
+    {
+        bool is_evaluable(char op) const
+        {
+            return dic_.find(op) != dic_.cend();
+        }
+
+        int operator ()(char op, int lhs, int rhs) const
+        {
+            return dic_.at(op)(lhs, rhs);
+        }
+
         std::map<char, std::function<int(int,int)> > const dic_ =
         {
             {   '+', [](int lhs, int rhs){  return lhs + rhs;}  },
