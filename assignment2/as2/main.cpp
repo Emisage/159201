@@ -216,7 +216,8 @@ private:
             std::getline(ifs, expr);
             auto it = expr.cbegin();
             for( ; it != expr.cend()  and  std::isspace(*it); ++it);
-            if(std::isdigit(*it))
+
+            if(std::isdigit(*it))       //parse number
             {
                 auto peek = it;
                 for(; peek != expr.cend() and !std::isspace(*peek); ++peek);
@@ -226,7 +227,8 @@ private:
                 std::cout << "reading number "   << num << std::endl;
                 continue;
             }
-            if(eval_.is_evaluable(*it))
+
+            if(eval_.is_evaluable(*it)) //parse operator
             {
                 std::cout << "reading operator " << *it << std::endl;
                 auto rhs = get_operand_and_check();
