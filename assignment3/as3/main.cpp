@@ -13,7 +13,7 @@ class Queue
     };
 
 public:
-    using SizeType  =   std::size_t;
+    using SizeType = std::size_t;
 
     void join(T t)
     {
@@ -38,7 +38,7 @@ public:
 
     bool empty()const
     {
-        return head_ or tail_;
+        return !head_ and !tail_ ;
     }
 
 private:
@@ -79,6 +79,24 @@ private:
 
 int main()
 {
+    struct Packet{};
+    using Data = std::pair<int, Packet>;
+    ads::Queue<Data> q;
+    for(auto && data : { Data{42,Packet{}}, Data{99,Packet{}} } )
+        q.join(std::move(data));
+
+    std::cout << "test for asd::Queue:\n";
+    for(;   not q.empty();  q.leave())
+        std::cout << q.front().first << " size=" << q.size() << std::endl;
+    std::cout << q.empty() << std::endl;
+
+    std::cout << "exit\n";
     return 0;
 }
-
+//! test for Queue, output:
+//!
+//test for asd::Queue:
+//42 size=2
+//99 size=1
+//1
+//exit
