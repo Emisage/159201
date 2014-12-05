@@ -182,8 +182,14 @@ private:
     //! abstraction II
     int get_operand_and_check() throw()
     {
+//        if(stk_.empty())
+//            throw std::logic_error{"too many operators\n"};
         if(stk_.empty())
-            throw std::logic_error{"too many operators!"};
+        {
+            std::cerr << "too many operators\n";
+            exit(1);
+        }
+
         auto operand = stk_.top();
         stk_.pop();
         return operand;
@@ -193,7 +199,11 @@ private:
     int get_result_and_check() throw()
     {
         if(1 != stk_.size())
-            throw std::logic_error{"too many numbers!"};
+//            throw std::logic_error{"too many numbers!"};
+        {
+            std::cerr << "too many numbers\n";
+            exit(1);
+        }
         auto result = stk_.top();
         stk_.pop();
         return result;
