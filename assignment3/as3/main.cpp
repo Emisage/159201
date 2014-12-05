@@ -46,7 +46,7 @@ private:
     Node* tail_{nullptr};
     SizeType size_{0};
 
-    void do_join(T && t) noexcept
+    void do_join(T&& t)
     {
         if(empty())
             head_ = tail_        = new Node{std::move(t), nullptr};
