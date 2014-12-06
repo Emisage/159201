@@ -1,13 +1,10 @@
 #include <iostream>
-#include <stdexcept>
 #include <fstream>
 #include <locale>
 #include <sstream>
 #include <string>
 #include <vector>
-#include <mutex>
-#include <chrono>
-#include <thread>
+#include <stdexcept>
 
 
 namespace ads {
@@ -100,16 +97,19 @@ private:
     Pool rx_pool_{};
     Pool tx_pool_{};
 
-
     //! II
-    void init_pools(std::ifstream& ifs)
+    void check_ifstream(std::ifstream& ifs) const
     {
         if(! ifs.is_open())
         {
             std::cout << "Could not read file: " << std::endl ;
             exit(0);
         }
+    }
 
+    //! II
+    void init_pools(std::ifstream& ifs)
+    {
         for(std::string expr; not ifs.eof(); )
         {
             std::getline(ifs, expr);
@@ -131,16 +131,34 @@ private:
         }
     }
 
-    //!
+    //! II
     void fill_rx_pools(std::ifstream& ifs)
     {
+        int port = 1;
+        for(std::string buff = "expect a line of digits"; ifs.eof(); ++port)
+        {
+            while(! std::isdigit(buff[0]))    std::getline(ifs, buff);
+            std::stringstream line{buff};
+            for(std::string token; std::getline(line, token, ' ') && token[0] != '\r'; )
+            {
+                int dest = std::stoi(token);
+                if(dest < 0 or dest > rx_pool_.size() or port > rx_pool_.size())
+                {
+                    std::cout << "ERROR in text file" << std::endl;
+                    exit(0);
+                }
 
+
+            }
+
+        }
     }
 
     //! I
     void do_construct(std::string const fn)
     {
         std::ifstream ifs{fn};
+        check_ifstream(ifs);
         init_pools(ifs);
         fill_rx_pools(ifs);
     }
