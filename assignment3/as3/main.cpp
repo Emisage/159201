@@ -1,5 +1,11 @@
 #include <iostream>
 #include <stdexcept>
+#include <fstream>
+#include <locale>
+#include <sstream>
+#include <string>
+#include <vector>
+
 
 namespace ads {
 
@@ -75,28 +81,18 @@ private:
     }
 };
 
+class Simulator
+{
+public:
+private:
+
+};
+
 }//namespace
 
 int main()
 {
-    struct Packet{};
-    using Data = std::pair<int, Packet>;
-    ads::Queue<Data> q;
-    for(auto && data : { Data{42,Packet{}}, Data{99,Packet{}} } )
-        q.join(std::move(data));
-
-    std::cout << "test for asd::Queue:\n";
-    for(;   not q.empty();  q.leave())
-        std::cout << q.front().first << " size=" << q.size() << std::endl;
-    std::cout << q.empty() << std::endl;
 
     std::cout << "exit\n";
     return 0;
 }
-//! test for Queue, output:
-//!
-//test for asd::Queue:
-//42 size=2
-//99 size=1
-//1
-//exit
