@@ -91,16 +91,12 @@ public:
 
     explicit Simulator(std::string const fn):
         input_{/* read */},
-        output_{/* construct with number of output ports */},
-        output_thread_{},
-        mutex_{}
+        output_{/* construct with number of output ports */}
     {}
 
 private:
     Pool input_;
     Pool output_;
-    std::thread output_thread_;
-    mutable std::mutex mutex_;
 };
 
 }//namespace
