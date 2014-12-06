@@ -89,14 +89,66 @@ class Simulator
 public:
     using Pool = std::vector<ads::Queue<int> >;
 
-    explicit Simulator(std::string const fn):
-        input_{/* read */},
-        output_{/* construct with number of output ports */}
-    {}
+    explicit Simulator(std::string const fn) {   do_construct(fn);  }
+
+    void run()
+    {
+        do_run();
+    }
 
 private:
-    Pool input_;
-    Pool output_;
+    Pool rx_pool_{};
+    Pool tx_pool_{};
+
+
+    //! II
+    void init_pools(std::ifstream& ifs)
+    {
+        if(! ifs.is_open())
+        {
+            std::cout << "Could not read file: " << std::endl ;
+            exit(0);
+        }
+
+        for(std::string expr; not ifs.eof(); )
+        {
+            std::getline(ifs, expr);
+            std::stringstream sstream{expr};
+
+            if(ifs.eof())       break;
+            if(expr[0] == '#')  continue;
+
+            if(expr[0] == 'P')
+            {
+                std::string token;
+                std::getline(sstream, token, ' ');
+                std::getline(sstream, token, ' ');
+                auto num_of_ports = std::stoi(token);
+                rx_pool_.resize(num_of_ports);
+                tx_pool_.resize(num_of_ports);
+                continue;
+            }
+        }
+    }
+
+    //!
+    void fill_rx_pools(std::ifstream& ifs)
+    {
+
+    }
+
+    //! I
+    void do_construct(std::string const fn)
+    {
+        std::ifstream ifs{fn};
+        init_pools(ifs);
+        fill_rx_pools(ifs);
+    }
+
+    void do_run()
+    {
+
+    }
 };
 
 }//namespace
