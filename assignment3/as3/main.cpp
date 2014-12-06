@@ -5,6 +5,9 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <mutex>
+#include <chrono>
+#include <thread>
 
 
 namespace ads {
@@ -84,14 +87,27 @@ private:
 class Simulator
 {
 public:
-private:
+    using Pool = std::vector<ads::Queue<int> >;
 
+    explicit Simulator(std::string const fn):
+        input_{/* read */},
+        output_{/* construct with number of output ports */},
+        output_thread_{},
+        mutex_{}
+    {}
+
+private:
+    Pool input_;
+    Pool output_;
+    std::thread output_thread_;
+    mutable std::mutex mutex_;
 };
 
 }//namespace
 
 int main()
 {
+    ads::Simulator simulator{"something"};
 
     std::cout << "exit\n";
     return 0;
