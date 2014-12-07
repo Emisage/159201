@@ -110,11 +110,25 @@ private:
     std::ifstream ifs_;
 };
 
+template<typename T>
+struct Pool : public std::vector<ads::Queue<T> >
+{
+    using Super = std::vector<ads::Queue<T> >;
+    Pool(std::size_t sz) : Super(sz) {}
+
+    void pop_each()
+    {
+        for(auto& q : *this) q.leave();
+    }
+};
 
 }//namespace
 
 int main()
 {
-    std::cout << "exit\n";
+    ads::Pool<int> pool(3);
+    pool[0].join(42);
+    std::cout << pool.size() << std::endl;
+
     return 0;
 }
