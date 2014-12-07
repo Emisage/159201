@@ -114,9 +114,8 @@ template<typename T>
 struct Pool : public std::vector<ads::Queue<T> >
 {
     using Super = std::vector<ads::Queue<T> >;
-    Pool(std::size_t sz) : Super(sz) {}
-
-    void pop_each()
+    Pool(std::size_t sz) : Super(sz){}
+    void pop_each() //for output queue
     {
         for(auto& q : *this) q.leave();
     }
