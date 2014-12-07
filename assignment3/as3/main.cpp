@@ -139,7 +139,7 @@ struct Pool : public std::vector<ads::Queue<T> >
 class Simulator
 {
 public:
-    explicit Simulator(std::string const& fn): rx_{}, tx_{}
+    explicit Simulator(std::string const& fn): rx_{}, tx_{}, congestion_{}
     {
         do_constructor(fn);
     }
@@ -152,6 +152,7 @@ public:
 private:
     Pool<int> rx_;
     Pool<int> tx_;
+    std::vector<std::size_t> congestion_;
 
     //! level I
     void do_constructor(std::string const& fn)
@@ -174,6 +175,7 @@ private:
 
                 rx_.resize(num_of_ports);
                 tx_.resize(num_of_ports);
+                congestion_.resize(num_of_ports);
                 continue;
             }
 
@@ -188,7 +190,7 @@ private:
         }
     }
 
-    //! leve I
+    //! level I
     void do_run()
     {
         std::size_t clock = 0;
@@ -205,7 +207,7 @@ private:
 
             //! delete from tx
             ++clock;
-            if(clock % (3 * tx_.size()) == 0 and clock != 0)
+            if(is_time_to_delete(clock))
             {
                 tx_.pop_each();
             }
@@ -214,6 +216,13 @@ private:
             ////    working here
             ////
         }
+    }
+
+    //! level II
+    template<typename Clock>
+    bool is_time_to_delete(Clock const& clock) const
+    {
+        return clock % (3 * tx_.size()) == 0 and clock != 0;
     }
 };
 
