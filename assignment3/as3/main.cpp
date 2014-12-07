@@ -126,6 +126,13 @@ struct Pool : public std::vector<ads::Queue<T> >
     {
         for(auto& q : *this) q.leave();
     }
+
+    T total_size()const
+    {
+        T ret = 0;
+        for(auto const& q : *this) ret += q->size();
+        return ret;
+    }
 };
 
 
@@ -146,7 +153,7 @@ private:
     Pool<int> rx_;
     Pool<int> tx_;
 
-    //! part I
+    //! level I
     void do_constructor(std::string const& fn)
     {
         std::size_t port = 0;
@@ -181,10 +188,32 @@ private:
         }
     }
 
-    //! part II
+    //! leve I
     void do_run()
     {
+        std::size_t clock = 0;
+        for(std::size_t port = 0; tx_.total_size() > 0; ++port)
+        {
+            //! rx to tx
+            port %= tx_.size();
+            if(! rx_[port].empty())
+            {
+                auto dest = rx_[port].front();
+                rx[port].leave();
+                tx_[dest].join(dest);
+            }
 
+            //! delete from tx
+            ++clock;
+            if(clock % (3 * tx_.size()) == 0 and clock != 0)
+            {
+                tx_.pop_each();
+            }
+
+            ////
+            ////    working here
+            ////
+        }
     }
 };
 
