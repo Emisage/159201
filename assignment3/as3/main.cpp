@@ -9,6 +9,9 @@
 
 namespace ads {
 
+/**
+ * @brief The Queue class
+ */
 template<typename T>
 class Queue
 {
@@ -80,6 +83,7 @@ private:
     }
 };
 
+
 /**
  * @brief The FileReader class
  *
@@ -110,24 +114,85 @@ private:
     std::ifstream ifs_;
 };
 
+
+/**
+ * @brief The Pool struct
+ */
 template<typename T>
 struct Pool : public std::vector<ads::Queue<T> >
 {
     using Super = std::vector<ads::Queue<T> >;
-    Pool(std::size_t sz) : Super(sz){}
     void pop_each() //for output queue
     {
         for(auto& q : *this) q.leave();
     }
 };
 
+
+class Simulator
+{
+public:
+    explicit Simulator(std::string const& fn): rx_{}, tx_{}
+    {
+        do_constructor(fn);
+    }
+
+    void run()
+    {
+        do_run();
+    }
+
+private:
+    Pool<int> rx_;
+    Pool<int> tx_;
+
+    //! part I
+    void do_constructor(std::string const& fn)
+    {
+        std::size_t port = 0;
+        for(FileReader file{fn}; ! file.is_end(); )
+        {
+            std::string line = file.read();
+
+            if(line[0] == '#')
+                continue;
+
+            if(line[0] == 'P')
+            {
+                std::stringstream ss{line};
+                std::string token;
+                std::getline(ss, token, ' ');
+                std::getline(ss, token, ' ');
+                int num_of_ports = std::stoi(token);
+
+                rx_.resize(num_of_ports);
+                tx_.resize(num_of_ports);
+                continue;
+            }
+
+            if(std::isdigit(line[0]))
+            {
+                ++port;
+                std::stringstream ss{line};
+                for(std::string token; std::getline(ss, token, ' '); )
+                    rx_[port].join(std::stoi(token));
+                continue;
+            }
+        }
+    }
+
+    //! part II
+    void do_run()
+    {
+
+    }
+};
+
+
 }//namespace
 
 int main()
 {
-    ads::Pool<int> pool(3);
-    pool[0].join(42);
-    std::cout << pool.size() << std::endl;
-
+    ads::Simulator sim{"simulation1.txt"};
     return 0;
 }
