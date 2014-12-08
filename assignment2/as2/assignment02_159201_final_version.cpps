@@ -1,3 +1,13 @@
+//!
+//! @author Wang WeiXu 13114633
+//! @date   08.12.2014
+//!
+//! @brief  This code implemented a parser evaluating Reverse Polish Notation expression
+//!         using a stack.
+//!
+//!         Assignment 2, 159.201,s3,2014
+//!
+
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -103,6 +113,8 @@ private:
 
 /**
  * @brief The Stack class
+ *
+ * using linked list as underlying data structrue
  */
 template<typename T, typename Container = ads::List<T> >
 class Stack
@@ -157,6 +169,9 @@ struct RpnParser
 
 private:
 
+    /**
+     * @brief The Eval functor
+     */
     struct Eval
     {
         bool is_evaluable(char op) const
@@ -224,6 +239,7 @@ private:
     }
 
     //! abstraction I
+    //! implementation for parsing and evaluation
     int do_parse_and_evaluate(std::string const& fn)
     {
         std::ifstream ifs{fn};
