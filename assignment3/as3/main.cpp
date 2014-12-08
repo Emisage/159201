@@ -122,13 +122,15 @@ private:
 template<typename T>
 struct Pool : public std::vector<ads::Queue<T> >
 {
-    using Super = std::vector<ads::Queue<T> >;
+    using Super     =   std::vector<ads::Queue<T> >;
+    using SizeType  =   typename Super::size_type;
     void pop_each() //for output queue
     {
         for(auto& q : *this) q.leave();
     }
 
-    T total_size()const
+
+    SizeType total_size() const
     {
         T ret = 0;
         for(auto const& q : *this) ret += q.size();
@@ -149,7 +151,7 @@ struct Congestion : public std::vector<T>
 class Simulator
 {
 public:
-    explicit Simulator(std::string const& fn): rx_{}, tx_{}, congestion_{}
+    explicit Simulator(std::string const& fn): rx_{}, tx_{}, peak_{}
     {
         do_constructor(fn);
     }
@@ -157,12 +159,23 @@ public:
     void run()
     {
         do_run();
+        do_print_result();
     }
 
 private:
     Pool<int> rx_;
     Pool<int> tx_;
-    Congestion<int> peak_;
+    Congestion<std::size_t> peak_;
+
+    //! level I
+    std::ostream& do_print_result()const
+    {
+        for(std::size_t idx=0; idx != tx_.size(); ++ idx)
+            std::cout << "output port "     << idx+1        << ": "
+                      << peak_[idx]         << " packets"   << std::endl;
+
+        return std::cout;
+    }
 
     //! level I
     void do_constructor(std::string const& fn)
@@ -226,7 +239,7 @@ private:
     {
         ++clock;
         if(clock % (3 * tx_.size()) == 0 and clock != 0)
-            tx_.pop_each()
+            tx_.pop_each();
     }
 
     //! level II
