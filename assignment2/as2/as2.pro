@@ -4,8 +4,8 @@ CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += c++11
 
-SOURCES +=
+SOURCES += \
+    assignment02_159201_final_version.cpp
 
-HEADERS += \
-    assignment02_159201_final_version.cpps
+HEADERS +=
 
