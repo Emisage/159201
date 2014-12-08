@@ -1,3 +1,10 @@
+//!
+//! @author Wang Weixu
+//! @date   08.12.2014
+//!
+//! @brief  Implementation for assignment 3, 159.201,s3,2014
+//!
+
 #include <iostream>
 #include <fstream>
 #include <locale>
@@ -10,10 +17,11 @@
 
 namespace ads {
 
+
 /**
  * @brief The Queue class
  *
- * implemented with linked list.
+ * Implemented with linked list.
  */
 template<typename T>
 class Queue
@@ -103,7 +111,7 @@ private:
 /**
  * @brief The FileReader class
  *
- * generator based on ifstream
+ * A Wrapper for std::ifstream
  */
 class FileReader
 {
@@ -119,6 +127,7 @@ public:
         return ifs_.eof();
     }
 
+    //! return one line each call
     std::string read()
     {
         std::string line;
@@ -139,15 +148,17 @@ private:
 template<typename T>
 struct Pool : public std::vector<ads::Queue<T> >
 {
-    using Super     =   std::vector<ads::Queue<T> >;
-    using SizeType  =   typename Super::size_type;
-    void pop_each() //for output queue
+    using Super     =               std::vector<ads::Queue<T> >;
+    using SizeType  =   typename    Super::size_type;
+
+    //! pop each non-empty queue
+    void pop_each()
     {
         for(auto& q : *this)
             if(! q.empty()) q.leave();
     }
 
-
+    //! return the sum of all queues' size
     SizeType total_size() const
     {
         T ret = 0;
@@ -156,20 +167,29 @@ struct Pool : public std::vector<ads::Queue<T> >
     }
 };
 
+
+/**
+ * @brief The Congestion struct
+ *
+ * A wrapper for std::vector by inheritance.
+ */
 template<typename T>
 struct Congestion : public std::vector<T>
 {
-    typename std::vector<T>::size_type
-    total_size()const
+    typename Congestion::size_type total_size()const
     {
         return std::accumulate(this->cbegin(), this->cend(), 0);
     }
 };
 
+
+/**
+ * @brief The top level abstraction
+ */
 class Simulator
 {
 public:
-    explicit Simulator(std::string const& fn): rx_{}, tx_{}, peak_{}
+    explicit Simulator(std::string const& fn)
     {
         do_constructor(fn);
     }
@@ -186,16 +206,17 @@ private:
     Congestion<std::size_t> peak_;
 
     //! level I
+    //! print peak_
     std::ostream& do_print_result()const
     {
         for(std::size_t idx=0; idx != tx_.size(); ++ idx)
             std::cout << "output port "     << idx+1        << ": "
                       << peak_[idx]         << " packets"   << std::endl;
-
         return std::cout;
     }
 
     //! level I
+    //! init all rx_ queues
     void do_constructor(std::string const& fn)
     {
         std::size_t port = 0;
@@ -235,26 +256,25 @@ private:
     }
 
     //! level I
+    //! perform simulation
     void do_run()
     {
         for(std::size_t port=0, clock=0, curr_sum=1; curr_sum > 0; ++port)
         {
-            //! rx to tx
             port %= tx_.size();
             if(! rx_[port].empty())
             {
-                auto dest = rx_[port].front() - 1;
+                auto dest = rx_[port].front()-1;
                 rx_[port].leave();
                 tx_[dest].join(dest);
             }
-
             update_tx(++clock);
             curr_sum = update_congestion_record();
         }
-
     }
 
     //! level II
+    //! delete packets in tx_ when necessary
     template<typename Clock>
     void update_tx(Clock & clock)
     {
@@ -263,6 +283,7 @@ private:
     }
 
     //! level II
+    //! update congestion records when necessary
     std::size_t update_congestion_record()
     {
         if(tx_.total_size() > peak_.total_size())
