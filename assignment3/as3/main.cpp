@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
+#include <algorithm>
 
 
 namespace ads {
@@ -130,11 +131,20 @@ struct Pool : public std::vector<ads::Queue<T> >
     T total_size()const
     {
         T ret = 0;
-        for(auto const& q : *this) ret += q->size();
+        for(auto const& q : *this) ret += q.size();
         return ret;
     }
 };
 
+template<typename T>
+struct Congestion : public std::vector<T>
+{
+    typename std::vector<T>::size_type
+    total_size()const
+    {
+        return std::accumulate(this->cbegin(), this->cend(), 0);
+    }
+};
 
 class Simulator
 {
@@ -152,7 +162,7 @@ public:
 private:
     Pool<int> rx_;
     Pool<int> tx_;
-    std::vector<std::size_t> congestion_;
+    Congestion<int> congestion_;
 
     //! level I
     void do_constructor(std::string const& fn)
@@ -175,7 +185,7 @@ private:
 
                 rx_.resize(num_of_ports);
                 tx_.resize(num_of_ports);
-                congestion_.resize(num_of_ports);
+                congestion_.resize(num_of_ports, 0);
                 continue;
             }
 
@@ -201,7 +211,7 @@ private:
             if(! rx_[port].empty())
             {
                 auto dest = rx_[port].front();
-                rx[port].leave();
+                rx_[port].leave();
                 tx_[dest].join(dest);
             }
 
