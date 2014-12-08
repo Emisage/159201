@@ -126,7 +126,8 @@ struct Pool : public std::vector<ads::Queue<T> >
     using SizeType  =   typename Super::size_type;
     void pop_each() //for output queue
     {
-        for(auto& q : *this) q.leave();
+        for(auto& q : *this)
+            if(! q.empty()) q.leave();
     }
 
 
@@ -220,38 +221,39 @@ private:
     //! level I
     void do_run()
     {
-        std::size_t clock = 0;
-        for(std::size_t port = 0; tx_.total_size() > 0; ++port)
+        for(std::size_t port=0, clock=0, curr_sum=1; curr_sum > 0; ++port)
         {
             //! rx to tx
             port %= tx_.size();
             if(! rx_[port].empty())
             {
-                auto dest = rx_[port].front();
+                auto dest = rx_[port].front() - 1;
                 rx_[port].leave();
                 tx_[dest].join(dest);
             }
 
-            update_clock_and_delete(clock);
-            update_congestion_record();
+            update_tx(++clock);
+            curr_sum = update_congestion_record();
         }
+
     }
 
     //! level II
     template<typename Clock>
-    void update_clock_and_delete(Clock & clock)
+    void update_tx(Clock & clock)
     {
-        ++clock;
+//        ++clock;
         if(clock % (3 * tx_.size()) == 0 and clock != 0)
             tx_.pop_each();
     }
 
     //! level II
-    void update_congestion_record()
+    std::size_t update_congestion_record()
     {
         if(tx_.total_size() > peak_.total_size())
             for(std::size_t idx=0; idx != tx_.size(); ++idx)
                 peak_[idx] = tx_[idx].size();
+        return tx_.total_size();
     }
 };
 
@@ -262,5 +264,7 @@ int main()
 {
     ads::Simulator sim{"simulation1.txt"};
     sim.run();
+
+    std::cout << "\nexit\n";
     return 0;
 }
