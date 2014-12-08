@@ -1,5 +1,5 @@
 //!
-//! @author Wang Weixu
+//! @author Yue Wang
 //! @date   08.12.2014
 //!
 //! @brief  This code implemented a router using linked list as underlying
