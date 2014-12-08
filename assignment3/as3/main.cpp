@@ -162,7 +162,7 @@ public:
 private:
     Pool<int> rx_;
     Pool<int> tx_;
-    Congestion<int> congestion_;
+    Congestion<int> peak_;
 
     //! level I
     void do_constructor(std::string const& fn)
@@ -185,7 +185,7 @@ private:
 
                 rx_.resize(num_of_ports);
                 tx_.resize(num_of_ports);
-                congestion_.resize(num_of_ports, 0);
+                peak_.resize(num_of_ports, 0);
                 continue;
             }
 
@@ -215,24 +215,26 @@ private:
                 tx_[dest].join(dest);
             }
 
-            //! delete from tx
-            ++clock;
-            if(is_time_to_delete(clock))
-            {
-                tx_.pop_each();
-            }
-
-            ////
-            ////    working here
-            ////
+            update_clock_and_delete(clock);
+            update_congestion_record();
         }
     }
 
     //! level II
     template<typename Clock>
-    bool is_time_to_delete(Clock const& clock) const
+    void update_clock_and_delete(Clock & clock)
     {
-        return clock % (3 * tx_.size()) == 0 and clock != 0;
+        ++clock;
+        if(clock % (3 * tx_.size()) == 0 and clock != 0)
+            tx_.pop_each()
+    }
+
+    //! level II
+    void update_congestion_record()
+    {
+        if(tx_.total_size() > peak_.total_size())
+            for(std::size_t idx=0; idx != tx_.size(); ++idx)
+                peak_[idx] = tx_[idx].size();
     }
 };
 
