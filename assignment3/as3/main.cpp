@@ -207,7 +207,10 @@ private:
                 ++port;
                 std::stringstream ss{line};
                 for(std::string token; std::getline(ss, token, ' '); )
+                {
+                    if(token[0] == '\r') continue;
                     rx_[port].join(std::stoi(token));
+                }
                 continue;
             }
         }
@@ -257,5 +260,6 @@ private:
 int main()
 {
     ads::Simulator sim{"simulation1.txt"};
+    sim.run();
     return 0;
 }
