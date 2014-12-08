@@ -20,6 +20,7 @@ class List
         T value;
         Node* next;
     };
+
 public:
     using SizeType = std::size_t;
 
@@ -180,14 +181,16 @@ private:
     ads::Stack<int> stk_;
 
     //! abstraction II
-    int get_operand_and_check() throw()
+    int get_operand_and_check()
     {
-//        if(stk_.empty())
-//            throw std::logic_error{"too many operators\n"};
-        if(stk_.empty())
+        try{
+            if(stk_.empty())
+                throw std::runtime_error{"too many operators\n"};
+        }
+        catch (std::runtime_error e)
         {
-            std::cerr << "too many operators\n";
-            exit(1);
+            std::cout << e.what();
+            exit(0);
         }
 
         auto operand = stk_.top();
@@ -196,21 +199,25 @@ private:
     }
 
     //! abstraction II
-    int get_result_and_check() throw()
+    int get_result_and_check()
     {
-        if(1 != stk_.size())
-//            throw std::logic_error{"too many numbers!"};
-        {
-            std::cerr << "too many numbers\n";
-            exit(1);
+        try{
+            if(1 != stk_.size())
+                throw std::runtime_error{"too many numbers\n"};
         }
+        catch (std::runtime_error e)
+        {
+            std::cout << e.what();
+            exit(0);
+        }
+
         auto result = stk_.top();
         stk_.pop();
         return result;
     }
 
     //! abstraction II
-    void check_file(std::ifstream& ifs) throw()
+    void check_file(std::ifstream& ifs)
     {
         if(!ifs.good())
             throw std::runtime_error{"Bad file name"};
