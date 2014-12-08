@@ -2,16 +2,17 @@
 //! @author Wang Weixu
 //! @date   08.12.2014
 //!
-//! @brief  Implementation for assignment 3, 159.201,s3,2014
+//! @brief  This code implemented a router using linked list as underlying
+//!             data structure.
+//!
+//!         Assignment 3, 159.201,s3,2014
 //!
 
 #include <iostream>
 #include <fstream>
-#include <locale>
 #include <sstream>
 #include <string>
 #include <vector>
-#include <stdexcept>
 #include <algorithm>
 
 
