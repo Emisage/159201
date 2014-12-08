@@ -211,7 +211,6 @@ private:
                     if(token[0] == '\r') continue;
                     rx_[port].join(std::stoi(token));
                 }
-
                 ++port;
                 continue;
             }
@@ -242,7 +241,6 @@ private:
     template<typename Clock>
     void update_tx(Clock & clock)
     {
-//        ++clock;
         if(clock % (3 * tx_.size()) == 0 and clock != 0)
             tx_.pop_each();
     }
@@ -260,11 +258,15 @@ private:
 
 }//namespace
 
-int main()
+int main(int argc, char** argv)
 {
-    ads::Simulator sim{"simulation1.txt"};
-    sim.run();
+    if(argc!=2)
+    {
+        std::cout<< "Type a file name. " << std::endl << argv[1] << std::endl;
+        exit(0);
+    }
 
-    std::cout << "\nexit\n";
+    ads::Simulator sim{argv[1]};
+    sim.run();
     return 0;
 }
