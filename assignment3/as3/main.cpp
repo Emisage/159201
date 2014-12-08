@@ -12,6 +12,8 @@ namespace ads {
 
 /**
  * @brief The Queue class
+ *
+ * implemented with linked list.
  */
 template<typename T>
 class Queue
@@ -50,10 +52,23 @@ public:
         return !head_ and !tail_ ;
     }
 
+    ~Queue()
+    {
+        do_destructor();
+    }
+
 private:
     Node* head_{nullptr};
     Node* tail_{nullptr};
     SizeType size_{0};
+
+    void do_destructor()
+    {
+        if(! empty())
+            for(Node* curr = head_ , *temp; (temp=curr); delete temp)
+                curr = curr->next_;
+        head_ = tail_ = nullptr;
+    }
 
     void do_join(T&& t)
     {
@@ -88,7 +103,7 @@ private:
 /**
  * @brief The FileReader class
  *
- * RAII for ifstream
+ * generator based on ifstream
  */
 class FileReader
 {
@@ -118,6 +133,8 @@ private:
 
 /**
  * @brief The Pool struct
+ *
+ * i.e. vector of queues
  */
 template<typename T>
 struct Pool : public std::vector<ads::Queue<T> >
