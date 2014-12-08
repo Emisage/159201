@@ -1,5 +1,5 @@
 //!
-//! @author Wang WeiXu 13114633
+//! @author Yue Wang
 //! @date   08.12.2014
 //!
 //! @brief  This code implemented a parser evaluating Reverse Polish Notation expression
