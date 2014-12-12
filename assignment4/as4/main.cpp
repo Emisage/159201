@@ -17,12 +17,12 @@ public:
     {
         if(empty())
         {
-            head_ = tail_ = new Node{new_value, nullptr, nullptr};
+            head_ = tail_       =   new Node{new_value, nullptr, nullptr};
         }
         else
         {
-            head_ = new Node{new_value, nullptr, head_};
-            head_->next_->prev_ = head_;
+            head_               =   new Node{new_value, nullptr, head_};
+            head_->next_->prev_ =   head_;
         }
         ++size_;
     }
@@ -78,27 +78,34 @@ struct BigNumber : private List<T>
 
     std::ostream& print() const
     {
-        for(auto ptr=this->head_; ptr; ptr=ptr->next_)  std::cout << ptr->value_;
+        for(auto ptr = this->head_; ptr; ptr = ptr->next_)
+            std::cout << ptr->value_;
         return std::cout << std::endl;
     }
 };
 
 
+/**
+ * @brief Section C : operator +
+ * @param lhs
+ * @param rhs
+ * @return
+ */
 template<typename T>
 BigNumber<T> operator+(BigNumber<T> const& lhs, BigNumber<T> const& rhs)
 {
     BigNumber<T> sum;
     int carry = 0;
-    auto l=lhs.tail_, r=rhs.tail_;
+    auto l = lhs.tail_, r = rhs.tail_;
 
-    for(; l and r; l=l->prev_, r=r->prev_)          //add two numbers.
+    for(; l and r; l = l->prev_, r = r->prev_)          //add two numbers.
     {
         auto digit_sum = carry + l->value_ + r->value_ ;
         sum.push_front(digit_sum%10);
         carry = digit_sum/10;
     }
 
-    for(auto rest = l?l:r; rest; rest=rest->prev_)  //when either one exhausted.
+    for(auto rest = l?l:r; rest; rest = rest->prev_)  //when either one exhausted.
     {
         auto digit_sum = carry + rest->value_;
         sum.push_front(digit_sum%10);
@@ -117,7 +124,7 @@ BigNumber<T> operator+(BigNumber<T> const& lhs, BigNumber<T> const& rhs)
 
 int main()
 {
-    ads::BigNumber<int> lhs{"1264"}, rhs{"333"};
+    ads::BigNumber<int> lhs{"100000000000000000000"}, rhs{"1"};
     lhs.print();
     rhs.print();
     auto sum = lhs + rhs;
