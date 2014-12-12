@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 
 namespace ads {
@@ -73,7 +74,8 @@ struct BigNumber : private List<T>
     BigNumber() = default;
     explicit BigNumber(std::string const& num)
     {
-        for(auto c = num.crbegin(); c != num.crend(); ++c)  push_front(*c - 48);
+        for(auto c = num.crbegin(); c != num.crend(); ++c)
+            if(std::isdigit(*c))    push_front(*c - 48);
     }
 
     std::ostream& print() const
@@ -122,14 +124,25 @@ BigNumber<T> operator+(BigNumber<T> const& lhs, BigNumber<T> const& rhs)
 }//namespace
 
 
-int main()
+int main(int argc, char ** argv)
 {
-    ads::BigNumber<int> lhs{"100000000000000000000"}, rhs{"1"};
-    lhs.print();
-    rhs.print();
-    auto sum = lhs + rhs;
-    sum.print();
+    if(argc!=2)
+    {
+        std::cout<< "cannot read the file " << argv[1] << std::endl;
+        exit(0);
+    }
 
+    std::string l,r;
+    {
+        std::ifstream ifs{argv[1]};
+        std::getline(ifs,l);
+        std::getline(ifs,r);
+    }
+
+    ads::BigNumber<int> lhs{l}, rhs{r};
+    lhs.print() << "+\n";
+    rhs.print() << "=\n";
+    (lhs+rhs).print();
     return 0;
 }
 
