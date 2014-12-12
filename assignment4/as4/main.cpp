@@ -70,6 +70,7 @@ struct BigNumber : private List<T>
     using Super = List<T>;
     using Super::push_front;
 
+    BigNumber() = default;
     explicit BigNumber(std::string const& num)
     {
         for(auto c = num.crbegin(); c != num.crend(); ++c)  push_front(*c - 48);
@@ -88,22 +89,23 @@ BigNumber<T> operator+(BigNumber<T> const& lhs, BigNumber<T> const& rhs)
 {
     BigNumber<T> sum;
     int carry = 0;
-    auto l=lhs->head_, r=rhs->tail_;
-    for(; l and r; l=l->next_, r=r->next_)              //add two numbers
+    auto l=lhs.tail_, r=rhs.tail_;
+
+    for(; l and r; l=l->prev_, r=r->prev_)          //add two numbers.
     {
         auto digit_sum = carry + l->value_ + r->value_ ;
         sum.push_front(digit_sum%10);
         carry = digit_sum/10;
     }
 
-    for(auto rest = (l ? l : r); rest; rest=rest->next_)//when either one exhausted
+    for(auto rest = l?l:r; rest; rest=rest->prev_)  //when either one exhausted.
     {
         auto digit_sum = carry + rest->value_;
         sum.push_front(digit_sum%10);
         carry = digit_sum/10;
     }
 
-    if(carry)                                           //for the last carry
+    if(carry)                                       //for the last carry,if any.
         sum.push_front(carry);
 
     return sum;
@@ -115,9 +117,11 @@ BigNumber<T> operator+(BigNumber<T> const& lhs, BigNumber<T> const& rhs)
 
 int main()
 {
-    ads::BigNumber<int> num{"1264"};
-    num.print();
-
+    ads::BigNumber<int> lhs{"1264"}, rhs{"333"};
+    lhs.print();
+    rhs.print();
+    auto sum = lhs + rhs;
+    sum.print();
 
     return 0;
 }
