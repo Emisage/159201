@@ -1,8 +1,21 @@
+//!
+//! @author Wang Weixu 13114633
+//! @date   12.12.2014
+//!
+//! @brief  This code implemented Big Number using linked list as underlying
+//!             data structure.
+//!
+//!         Assignment 4, 159.201,s3,2014
+//!
+
+
 #include <iostream>
 #include <fstream>
 #include <string>
 
+
 namespace ads {
+
 
 /**
  * @brief Section A : The List class
@@ -77,8 +90,7 @@ struct BigNumber : private List<T>
 
     std::ostream& print() const
     {
-        for(auto ptr = this->head_; ptr; ptr = ptr->next_)
-            std::cout << ptr->value_;
+        for(auto ptr = this->head_; ptr; ptr = ptr->next_)  std::cout << ptr->value_;
         return std::cout << std::endl;
     }
 };
@@ -88,7 +100,7 @@ struct BigNumber : private List<T>
  * @brief Section C : operator +
  * @param lhs
  * @param rhs
- * @return
+ * @return the sum
  */
 template<typename T>
 BigNumber<T> operator+(BigNumber<T> const& lhs, BigNumber<T> const& rhs)
@@ -104,14 +116,14 @@ BigNumber<T> operator+(BigNumber<T> const& lhs, BigNumber<T> const& rhs)
         carry = digit_sum/10;
     }
 
-    for(auto rest = l?l:r; rest; rest = rest->prev_)  //when either one exhausted.
+    for(auto rest = l?l:r; rest; rest = rest->prev_)    //when either one exhausted.
     {
         auto digit_sum = carry + rest->value_;
         sum.push_front(digit_sum%10);
         carry = digit_sum/10;
     }
 
-    if(carry)                                       //for the last carry,if any.
+    if(carry)                                           //for the last carry,if any.
         sum.push_front(carry);
 
     return sum;
