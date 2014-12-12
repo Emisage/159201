@@ -55,7 +55,6 @@ private:
 
 template<typename T>
 struct BigNumber;
-
 template<typename T>
 BigNumber<T> operator+(BigNumber<T> const& lhs, BigNumber<T> const& rhs);
 
@@ -67,9 +66,7 @@ template<typename T>
 struct BigNumber : private List<T>
 {
     friend BigNumber operator+ <T>(BigNumber const&, BigNumber const&);
-
-    using Super = List<T>;
-    using Super::push_front;
+    using List<T>::push_front;
 
     BigNumber() = default;
     explicit BigNumber(std::string const& num)
@@ -119,8 +116,6 @@ BigNumber<T> operator+(BigNumber<T> const& lhs, BigNumber<T> const& rhs)
 
     return sum;
 }
-
-
 }//namespace
 
 
