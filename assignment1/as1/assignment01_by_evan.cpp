@@ -38,7 +38,7 @@ inline bool is_same_position(Node<T> const& lhs, Node<T> const& rhs)
 template<typename T>
 inline bool is_precedent(Node<T> const& lhs, Node<T> const& rhs)
 {
-    if(lhs.row_ < lhs.row_)         return true;
+    if(lhs.row_ < rhs.row_)         return true;
     else if (lhs.row_ == rhs.row_)  return lhs.col_ < rhs.col_;
     else                            return false;
 }
@@ -148,7 +148,7 @@ ostream& operator<<(ostream& os, Matrix<T> const& mat)
                 curr = curr->next_;
             }
         }
-        os<<endl;
+        os << endl;
     }
     return os;
 }
