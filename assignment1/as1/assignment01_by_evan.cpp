@@ -45,9 +45,19 @@ inline Node<T> operator+(Node<T> const& lhs, Node<T> const& rhs)
 }
 
 
+//! forward declarations
+template<typename T> class Matrix;
+template<typename T> Matrix<T> operator+(Matrix<T> const&, Matrix<T> const&);
+template<typename T> ostream& operator<<(ostream&, Matrix<T> const&);
+
+
 template<typename T> class Matrix
 {
     using Nd = Node<T>;
+
+    friend Matrix operator+<T>(Matrix const& , Matrix const& );
+    friend ostream& operator<< <Nd> (ostream&, Matrix<Nd> const&);
+
 public:
     Matrix() = default;
     explicit Matrix(string const& fn): Matrix{} { do_ctor_from_file(fn); }
@@ -110,7 +120,6 @@ private:
                     push_back(Nd{r, c, value, nullptr});
             }
         }
-
     }
 };
 
