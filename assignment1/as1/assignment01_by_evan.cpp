@@ -15,15 +15,20 @@ using std::stringstream;
 
 template<typename T> struct Node
 {
-    size_t row_;
-    size_t col_;
-    T val_;
-    Node* next_;
+    Node() = default;
+    Node(size_t r, size_t c, T val, Node* nxt):
+        row_{r}, col_{c}, val_{val}, next_{nxt}
+    {}
+
+    size_t row_{0};
+    size_t col_{0};
+    T val_= T();
+    Node* next_{nullptr};
 };
 
 
 template<typename T>
-inline bool is_same_position(Node<T> const& lhs, Node const& rhs)
+inline bool is_same_position(Node<T> const& lhs, Node<T> const& rhs)
 {
     return lhs.row_ == rhs.row_ and lhs.col_ == rhs.col_;
 }
@@ -62,16 +67,16 @@ public:
     Matrix() = default;
     explicit Matrix(string const& fn): Matrix{} { do_ctor_from_file(fn); }
 
-    bool empty() const { return not data_; }
+    bool empty() const { return not head_; }
     ostream& print_data() const { return do_print_data(); }
 
     ~Matrix()
     {
-        for(Nd* cur = data_, *tmp; (tmp = cur); cur=cur->next_) delete tmp;
+        for(Nd* cur = head_, *tmp; (tmp = cur); cur=cur->next_) delete tmp;
     }
 
 private:
-    Nd* head_{nullptr}, tail_{nullptr};
+    Nd *head_{}, *tail_{};
     size_t rows_{0}, cols_{0};
 
     void push_back(Nd&& node)
@@ -82,8 +87,8 @@ private:
         }
         else
         {
-            tail_->next     =   new Nd(std::move(node));
-            tail_           =   tail_->next;
+            tail_->next_    =   new Nd(std::move(node));
+            tail_           =   tail_->next_;
         }
     }
 
@@ -123,7 +128,12 @@ private:
     }
 };
 
-int main()
+int main(int argc, char** argv )
 {
-
+    if(argc!=3)
+    {
+        std::cout << "needs two matrices\n";
+        exit(-1);
+    }
+    Matrix<int> lhs{argv[1]}, rhs{argv[2]};
 }
