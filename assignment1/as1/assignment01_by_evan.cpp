@@ -67,6 +67,7 @@ template<typename T> class Matrix
 public:
     Matrix() = default;
     explicit Matrix(string const& fn): Matrix{} { do_ctor_from_file(fn); }
+    Matrix(size_t r, size_t c): head_{nullptr},tail_{nullptr},rows_{r},cols_{c} {}
 
     bool empty() const { return not head_; }
     ostream& print_data() const { return do_print_data(); }
@@ -80,7 +81,7 @@ private:
     Nd *head_{}, *tail_{};
     size_t rows_{0}, cols_{0};
 
-    void push_back(Nd&& node)
+    void push_back(Nd node)
     {
         if(empty())
         {
@@ -153,6 +154,42 @@ ostream& operator<<(ostream& os, Matrix<T> const& mat)
     return os;
 }
 
+
+template<typename T>
+Matrix<T> operator+(Matrix<T> const& lhs, Matrix<T> const& rhs)
+{
+    Matrix<T> ret{lhs.rows_, lhs.cols_};
+    auto append = [&ret] (Node<T> node) { ret.push_back(node); };
+
+    //! copy until either one exausted
+    auto l = lhs.head_, r = rhs.head_;
+    while(l and r)
+    {
+        if(is_same_position(*l, *r))
+        {
+            append(*l + *r);
+            l = l->next_;
+            r = r->next_;
+        }
+        else if(is_precedent(*l, *r))
+        {
+            append(*l);
+            l = l->next_;
+        }
+        else
+        {
+            append(*r);
+            r = r->next_;
+        }
+    }
+
+    //! copy the rest
+    for(auto rest = l?l:r;  rest;  rest = rest->next_) append(*rest);
+
+    return ret;
+}
+
+
 int main(int argc, char** argv )
 {
     if(argc!=3)
@@ -162,10 +199,16 @@ int main(int argc, char** argv )
     }
 
     Matrix<int> lhs{argv[1]}, rhs{argv[2]};
-    lhs.print_data() << endl;
-    cout << lhs;
-    rhs.print_data() << endl;
-    cout << rhs;
+    auto sum = lhs + rhs;
+    auto print = [](Matrix<int> const& m, string const& str){
+        cout << str;
+        m.print_data() << endl;
+        cout << m;
+    };
+
+    print(lhs, "Matrix 1: ");
+    print(rhs, "Matrix 2: ");
+    print(sum, "Matrix Result: ");
 
     return 0;
 }
