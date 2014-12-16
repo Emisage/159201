@@ -1,3 +1,9 @@
+//!
+//! @author Xiufeng ZHANG ID 06197620
+//! @author Boxi Zhang ID 12238967
+//! @brief : assignment 1 159.201
+//!
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
