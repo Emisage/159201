@@ -40,6 +40,22 @@ inline Node<T> operator+(Node<T> const& lhs, Node<T> const& rhs)
 }
 
 
+template<typename T> class Matrix
+{
+    using Nd = Node<T>;
+public:
+    bool empty() const{ return not data_; }
+
+    ~Matrix()
+    {
+        for(Nd* cur = data_, *tmp; (tmp = cur); cur=cur->next_) delete tmp;
+    }
+
+private:
+    Nd* data_;
+    size_t rows_, cols_;
+};
+
 int main()
 {
 
