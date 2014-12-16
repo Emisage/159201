@@ -7,6 +7,7 @@
 using std::size_t;
 using std::ostream;
 using std::cout;
+using std::endl;
 using std::string;
 using std::ifstream;
 using std::getline;
@@ -61,7 +62,7 @@ template<typename T> class Matrix
     using Nd = Node<T>;
 
     friend Matrix operator+<T>(Matrix const& , Matrix const& );
-    friend ostream& operator<< <Nd> (ostream&, Matrix<Nd> const&);
+    friend ostream& operator<< <T> (ostream&, Matrix<T> const&);
 
 public:
     Matrix() = default;
@@ -94,7 +95,7 @@ private:
 
     ostream& do_print_data() const
     {
-        for(auto p = head_;  p;  p = p->next_)  cout << p->value << " ";
+        for(auto p = head_;  p;  p = p->next_)  cout << p->val_ << " ";
         return cout;
     }
 
@@ -128,6 +129,30 @@ private:
     }
 };
 
+
+template<typename T>
+ostream& operator<<(ostream& os, Matrix<T> const& mat)
+{
+    auto curr = mat.head_;
+    for(size_t r = 0; r != mat.rows_; ++r)
+    {
+        for(size_t c = 0; c != mat.cols_; ++c)
+        {
+            if(!curr or is_precedent(Node<T>{r, c, 0, nullptr}, *curr))
+            {
+                os << 0 << " ";
+            }
+            else
+            {
+                os << curr->val_ << " ";
+                curr = curr->next_;
+            }
+        }
+        os<<endl;
+    }
+    return os;
+}
+
 int main(int argc, char** argv )
 {
     if(argc!=3)
@@ -135,5 +160,12 @@ int main(int argc, char** argv )
         std::cout << "needs two matrices\n";
         exit(-1);
     }
+
     Matrix<int> lhs{argv[1]}, rhs{argv[2]};
+    lhs.print_data() << endl;
+    cout << lhs;
+    rhs.print_data() << endl;
+    cout << rhs;
+
+    return 0;
 }
