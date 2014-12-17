@@ -41,7 +41,7 @@ Node* add_matrices(Node* a, Node* b){
             add_node(sum, p1->row, p1->column, p1->value);
             p1 = p1->next;
         } else {
-            add_node(sum, p1->row, p1->column, p1->value + p2->value);
+            add_node(sum, p2->row, p2->column, p2->value);
             p2 = p2->next;
         }
     }
@@ -57,8 +57,7 @@ Node* add_matrices(Node* a, Node* b){
     return sum;
 }
 
-void printAndClear(Node *node){
-    int col = 0, row = 0;
+void print_clear(Node *node, int &row, int &col){
     for (Node *p=node; p; p=p->next) {
         if (!p->next) {
             row = p->row;
@@ -70,7 +69,7 @@ void printAndClear(Node *node){
     
     for (int i=0; i<=row; ++i) {
         for (int j=0; j<=col; ++j)
-            if (node->row == i && node->column == j) {
+            if (node && node->row == i && node->column == j) {
                 printf("%d ", node->value);
                 // free
                 Node *del = node;
@@ -83,12 +82,13 @@ void printAndClear(Node *node){
 }
 
 void print_all(Node* a, Node* b, Node* ret){
+    int row = 0, col = 0;
     printf("Matrix 1: ");
-    printAndClear(a);
+    print_clear(a, row, col);
     printf("Matrix 2: ");
-    printAndClear(b);
+    print_clear(b, row, col);
     printf("Matrix Result: ");
-    printAndClear(ret);
+    print_clear(ret, row, col);
 }
 
 void read_matrix(Node* &a, char *file_name){
@@ -122,7 +122,7 @@ int main( int argc, char** argv ) {
 	if(argc!=3) {printf("needs two matrices \n"); exit(0);}
     read_matrix(A, argv[1]);
 	read_matrix(B, argv[2]);
-	Node *sum = add_matrices(A, B);
+    Node *sum = add_matrices(A, B);
 	print_all(A, B, sum);
 }
 
