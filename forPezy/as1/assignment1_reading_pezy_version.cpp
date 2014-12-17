@@ -12,6 +12,8 @@ struct Node {  //declaration
 };
 Node *A, *B;  //declaration
 
+int row = 0, col = 0;
+
 void add_node(Node* &a, int i, int j, int value){
     Node *node = (Node*)malloc(sizeof(Node));
     node->row = i;
@@ -57,18 +59,13 @@ Node* add_matrices(Node* a, Node* b){
     return sum;
 }
 
-void print_clear(Node *node, int &row, int &col){
-    for (Node *p=node; p; p=p->next) {
-        if (!p->next) {
-            row = p->row;
-            col = p->column;
-        }
+void print_clear(Node *node){
+    for (Node *p=node; p; p=p->next)
         printf("%d ", p->value);
-    }
     printf("\n");
     
-    for (int i=0; i<=row; ++i) {
-        for (int j=0; j<=col; ++j)
+    for (int i=0; i<row; ++i) {
+        for (int j=0; j<col; ++j)
             if (node && node->row == i && node->column == j) {
                 printf("%d ", node->value);
                 // free
@@ -82,19 +79,18 @@ void print_clear(Node *node, int &row, int &col){
 }
 
 void print_all(Node* a, Node* b, Node* ret){
-    int row = 0, col = 0;
     printf("Matrix 1: ");
-    print_clear(a, row, col);
+    print_clear(a);
     printf("Matrix 2: ");
-    print_clear(b, row, col);
+    print_clear(b);
     printf("Matrix Result: ");
-    print_clear(ret, row, col);
+    print_clear(ret);
 }
 
 void read_matrix(Node* &a, char *file_name){
     //reads a matrix from a file
     
-    int col = 0, row = 0, value = 0;  
+    int value = 0;  
     FILE *input = NULL;
     input = fopen(file_name, "r");
     
