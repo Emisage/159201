@@ -68,23 +68,3 @@ int main(int argc, char **argv)
     if (stk.empty()) cout << "The result is " << ret << endl;
     else cerr << "too many numbers" << endl;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
