@@ -15,8 +15,11 @@ class Stack {
 public:
     ~Stack() 
     {
-        for (StackNode *pDel=node; node; delete pDel)
-            node = node->next;
+        while (node) {
+            StackNode *pDel = node;
+            node = pDel->next;
+            delete pDel;
+        }   
     }
     
     bool empty() { return node == nullptr; }
