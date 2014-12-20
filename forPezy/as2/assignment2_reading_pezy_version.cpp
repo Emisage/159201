@@ -1,9 +1,8 @@
-#include <cassert>
 #include <fstream>
 #include <string>
 #include <iostream>
 
-using std::cout; using std::endl; using std::cerr;
+using std::cout; using std::endl;
 
 struct StackNode {
     int val;
@@ -32,7 +31,6 @@ public:
     int pop()
     {
         StackNode *top = node;
-        assert(top);
         int ret = top->val;
         node = top->next;
         delete top;
@@ -44,7 +42,7 @@ private:
 
 int main(int argc, char **argv)
 {
-    if (argc != 2) { cerr << "cannot read file" << endl; exit(0); }
+    if (argc != 2) { cout << "cannot read file" << endl; exit(0); }
     std::ifstream ifs(argv[1]);
     Stack stk;
     for (std::string exp; getline(ifs, exp); ) {
@@ -56,9 +54,9 @@ int main(int argc, char **argv)
             cout << "reading operator " << exp[0] << endl;
             int op1{0}, op2{0};
             if (!stk.empty()) op2 = stk.pop();
-            else { cerr << "too many operators" << endl; exit(0); }
+            else { cout << "too many operators" << endl; exit(0); }
             if (!stk.empty()) op1 = stk.pop();
-            else { cerr << "too many operators" << endl; exit(0); }
+            else { cout << "too many operators" << endl; exit(0); }
             switch (exp[0]) {
             case '+' : stk.push(op1 + op2); break;
             case '-' : stk.push(op1 - op2); break;   
@@ -69,5 +67,5 @@ int main(int argc, char **argv)
     }
     int ret = stk.pop();
     if (stk.empty()) cout << "The result is " << ret << endl;
-    else cerr << "too many numbers" << endl;
+    else cout << "too many numbers" << endl;
 }
